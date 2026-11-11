@@ -133,8 +133,14 @@ def main():
     assert reader.cells[0].id == 'design-title' and reader.cells[1].id == 'design-contents'
     assert 'Код свёрнут' not in reader.cells[1].source
     reader_map = {c.id: c for c in reader.cells}
+    team = json.loads((ROOT / 'design/team.json').read_text(encoding='utf-8'))
+    title = reader_map['design-title'].source
+    for member in team['research']:
+        assert f'Случайная величина {member["variable"]} (`{member["column"]}`) — {member["author"]}.' in title
+    assert all(name in title for name in team['design'])
+    assert 'заполняются командой' not in title
     for cell in full.cells:
-        if cell.cell_type == 'markdown' and cell.id != 'design-contents':
+        if cell.cell_type == 'markdown' and cell.id not in ('design-title', 'design-contents'):
             assert local_navigation(reader_map[cell.id].source) == cell.source, ('Author prose changed', cell.id)
     native_markdown = (ROOT / 'REPORT.md').read_text(encoding='utf-8')
     expected_local = '\n\n'.join(local_navigation(c.source) for c in reader.cells) + '\n'
@@ -199,6 +205,8 @@ def main():
         'notebook_links_to_native_reader': len(notebook_destinations),
         'fragment_only_links_in_notebook': 0, 'html_navigation_stays_local': True,
         'author_conclusions_unchanged': True,
+        'reader_title_matches_supplied_team': True,
+        'research_authors': team['research'], 'design_authors': team['design'],
         'units_verified': False, 'content_questions': 'design/REVIEW_NOTES.md',
         'handwriting_results_recovered': False,
         'versions': {p: importlib.metadata.version(p) for p in

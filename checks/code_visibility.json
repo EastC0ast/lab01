@@ -9,8 +9,9 @@
   "calculation_sha256": "9d80a29396ed85ef0d0900064a9ee3dead45ae5f2dd4dc0d51759ec9e9a9a1d3",
   "calculation_hash_line_endings": "LF (Git canonical)",
   "calculation_code_cells": 22,
-  "markdown_cells_preserved": 64,
+  "markdown_cells_preserved": 63,
   "presentation_only_overrides": [
+    "design-title",
     "design-contents"
   ],
   "figures_preserved": 15,

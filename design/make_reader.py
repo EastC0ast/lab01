@@ -40,6 +40,25 @@ def visible_text(markup):
     return BeautifulSoup(markup, 'html.parser').get_text()
 
 
+def reader_title():
+    """Plain reader title with the authors supplied by the team."""
+    team = json.loads((ROOT / 'design/team.json').read_text(encoding='utf-8'))
+    researchers = '\n'.join(
+        f'Случайная величина {item["variable"]} (`{item["column"]}`) — {item["author"]}.  '
+        for item in team['research'])
+    designers = '; '.join(team['design'])
+    return (
+        '<a id="top" name="top" class="lab-anchor"></a>\n\n'
+        '# Лабораторная работа № 1\n\n'
+        'Прикладная статистика. Первый спринт.\n\n'
+        'Исследование трёх случайных величин\n\n'
+        '**Авторы исследования**\n\n'
+        + researchers + '\n\n'
+        '**КТвД: оформление и дополнительное дизайнерское задание**\n\n'
+        + designers + '.\n\n'
+        'Данные: `ASE10.csv`.')
+
+
 def reader_contents(source):
     return source.replace(
         'Код свёрнут; результаты расчётов оставлены видимыми.',
@@ -104,6 +123,8 @@ def main():
     for cell in original.cells:
         if cell.cell_type == 'markdown':
             cells.append(copy.deepcopy(cell))
+            if cell.id == 'design-title':
+                cells[-1].source = reader_title()
             if cell.id == 'design-contents':
                 cells[-1].source = reader_contents(cells[-1].source)
                 cells.append(md_cell(
@@ -201,6 +222,7 @@ def main():
     originals = {c.id: c.source for c in original.cells if c.cell_type == 'markdown'}
     preserved = {c.id: c.source for c in report.cells if c.id in originals}
     expected = dict(originals)
+    expected['design-title'] = reader_title()
     expected['design-contents'] = reader_contents(expected['design-contents'])
     assert preserved == expected, 'Existing report text was changed beyond the reader notice'
     markdown = '\n'.join(c.source for c in report.cells)
@@ -259,8 +281,8 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
         'calculation_sha256': hashlib.sha256(source_bytes.replace(b'\r\n', b'\n')).hexdigest(),
         'calculation_hash_line_endings': 'LF (Git canonical)',
         'calculation_code_cells': len(code_cells),
-        'markdown_cells_preserved': len(originals) - 1,
-        'presentation_only_overrides': ['design-contents'], 'figures_preserved': figure,
+        'markdown_cells_preserved': len(originals) - 2,
+        'presentation_only_overrides': ['design-title', 'design-contents'], 'figures_preserved': figure,
         'png_bytes_unchanged': True, 'tables_preserved': tables,
         'stdout_blocks_preserved': streams, 'result_checks': result_checks,
         'internal_links': len(links), 'broken_links': missing,
@@ -333,7 +355,8 @@ python -m marimo check --strict designer_generator/app.py
 
 Изменения публикуются только в `design-layout`. Проверки GitHub работают с правами
 чтения и не записывают результаты в ветки. `master`, `design` и исходный репозиторий
-`ffriewrya/lab01` не изменяются. Авторы и группы на титульнике ожидают заполнения командой.
+`ffriewrya/lab01` не изменяются. Авторы и распределение ролей на титульнике взяты
+из `design/team.json` по сведениям команды; номера групп не указаны.
 
 '''
     readme.write_text(notice.rstrip() + '\n', encoding='utf-8')

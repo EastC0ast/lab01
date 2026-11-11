@@ -1,0 +1,8 @@
+{
+  "research": [
+    {"variable": 1, "column": "ASE_NO2", "author": "Булавкин Никита"},
+    {"variable": 2, "column": "ASE_T", "author": "Коненкова Элла"},
+    {"variable": 3, "column": "ASE_CO", "author": "Пашкова Ксения"}
+  ],
+  "design": ["Янковская Катерина", "Шерстнев Игорь"]
+}
