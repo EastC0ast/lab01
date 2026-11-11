@@ -5,6 +5,9 @@ on:
     branches: [design-layout]
     paths:
       - 'design/notebook_source.json.gz.b64'
+      - 'design/build_report.py'
+      - 'requirements-design.txt'
+      - '.github/workflows/design-report.yml'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +30,22 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
+      - name: Verify presentation source integrity
+        run: |
+          python - <<'PY'
+          import base64, gzip, hashlib
+          from pathlib import Path
+          path = Path('design/notebook_source.json.gz.b64')
+          encoded = path.read_text().strip()
+          # Correct the documented single-character transport error only.
+          # The complete decoded SHA-256 must still match the local prepared edition.
+          encoded = encoded.replace('wlkulaVhkh4GH', 'wlkulaVkh4GH')
+          decoded = gzip.decompress(base64.b64decode(encoded, validate=True))
+          expected = '77cfea26416862e15852103b31a2fa2e13441cda7ec06702217b1a375953c602'
+          assert hashlib.sha256(decoded).hexdigest() == expected, 'Presentation source checksum mismatch'
+          path.write_text(encoded + '\n')
+          print('Presentation source verified against the prepared notebook.')
+          PY
       - name: Install notebook dependencies
         run: python -m pip install -r requirements-design.txt
       - name: Execute, verify and export the report
@@ -36,12 +55,12 @@ jobs:
       - name: Commit rendered results to design-layout only
         run: |
           test "$(git branch --show-current)" = "design-layout"
-          git add lab01.ipynb lab01_reading.html DESIGN_README.md design/style_layer.py design/report.css checks/render_verification.json
+          git add lab01.ipynb lab01_reading.html DESIGN_README.md design/style_layer.py design/report.css checks/render_verification.json design/notebook_source.json.gz.b64
           if git diff --cached --quiet; then
             echo "No output changes."
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'design: save executed notebook and reader with hidden code'
+          git commit -m 'design: publish executed notebook, navigation and hidden-code reader'
           git push origin HEAD:refs/heads/design-layout
