@@ -5,8 +5,6 @@ on:
     branches: [design-layout]
     paths:
       - 'design/notebook_source.json.gz.b64'
-      - 'design/build_report.py'
-      - 'requirements-design.txt'
   workflow_dispatch:
 
 permissions:
