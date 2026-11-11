@@ -1,9 +1,4 @@
-"""Rebuild the prepared design edition without changing author calculations.
-
-The compressed source contains presentation cells and references to the original
-calculation cells, not replacement algorithms. All input hashes are verified.
-This script does not push commits; the branch-restricted workflow handles that.
-"""
+"""Rebuild the prepared design edition; preserve every original calculation cell."""
 from __future__ import annotations
 
 import ast
@@ -25,7 +20,7 @@ from nbconvert import HTMLExporter
 ROOT = Path(__file__).resolve().parents[1]
 BASE = 'f857ccb2bc1ba39f29be79677d018fc7e0d2d28c'
 BLOB = '61c0e5adda0abfd1edafd5e220d624b2b816dc69'
-PACKET_SHA = 'eff2e56d6b4d2f72dc594e33af0a847f424ab7df5332276c3eda085356dc302b'
+PACKET_SHA = '77cfea26416862e15852103b31a2fa2e13441cda7ec06702217b1a375953c602'
 
 
 def source_hash(notebook):
@@ -121,7 +116,6 @@ def main():
             comparisons.append({'id': cell.id, 'groups': len(expected), 'unchanged': same})
             if not same:
                 raise RuntimeError('Numerical output changed in cell ' + cell.id + ': ' + repr((expected, observed))[:1500])
-    # Keep computations available, but collapsed in supporting notebook frontends.
     for cell in notebook.cells:
         if cell.cell_type == 'code':
             cell.metadata.update(copy.deepcopy(packet['code_metadata']))
@@ -163,10 +157,13 @@ details.lab-code summary{cursor:pointer;color:#245b78;font-size:13px;padding:5px
         input_area.wrap(details)
     toolbar = soup.new_tag('nav', attrs={'class': 'lab-toolbar', 'aria-label': 'Управление отчётом'})
     for label, target in [('Оглавление', '#contents'), ('Рисунки и таблицы', '#figure-index'), ('К началу', '#top')]:
-        a = soup.new_tag('a', href=target); a.string = label; toolbar.append(a)
+        a = soup.new_tag('a', href=target)
+        a.string = label
+        toolbar.append(a)
     for label, value in [('Показать весь код', 'true'), ('Скрыть весь код', 'false')]:
         button = soup.new_tag('button', attrs={'type': 'button', 'onclick': "document.querySelectorAll('details.lab-code').forEach(x=>x.open=" + value + ')'})
-        button.string = label; toolbar.append(button)
+        button.string = label
+        toolbar.append(button)
     soup.body.insert(0, toolbar)
     (ROOT / 'lab01_reading.html').write_text(str(soup), encoding='utf-8')
     figures = sum('image/png' in output.get('data', {}) for cell in notebook.cells for output in cell.get('outputs', []))
@@ -186,27 +183,26 @@ details.lab-code summary{cursor:pointer;color:#245b78;font-size:13px;padding:5px
 
 Рабочая ветка: `design-layout` в `EastC0ast/lab01`. Основа — commit `f857ccb2bc1ba39f29be79677d018fc7e0d2d28c` из ветки `design`. Основная ветка и репозиторий команды не изменяются.
 
-## Файлы
+## Просмотр
 
-- [lab01.ipynb](lab01.ipynb) — основной Jupyter-ноутбук с сохранёнными графиками и таблицами.
-- [Версия для чтения](lab01_reading.html) — скачать и открыть в браузере. В ней код скрыт при открытии, есть кнопки раскрытия всех ячеек и индивидуальные переключатели.
-- [Проверки](checks/render_verification.json) — результаты выполнения и сравнения с исходником.
+- [Открыть ноутбук](lab01.ipynb).
+- [Открыть в Colab](https://colab.research.google.com/github/EastC0ast/lab01/blob/design-layout/lab01.ipynb).
+- [Версия для чтения](lab01_reading.html): скачать и открыть в браузере. Код скрыт при открытии; все ячейки можно раскрыть.
+- [Результаты проверок](checks/render_verification.json).
 
-## Оформление
+Добавлены титульник, оглавление, нумерация, перекрёстные ссылки, переходы между разделами и указатель рисунков/таблиц. Все графики оформлены одинаково. 21 исходная расчётная ячейка сохранена посимвольно. Исходные статистические выводы не исправлялись. Это не подтверждение их корректности: замечания по содержанию необходимо согласовать с командой.
 
-Добавлены титульный блок, оглавление, нумерация, перекрёстные ссылки, переходы между разделами и указатель рисунков/таблиц. Все графики оформлены одинаково. 21 исходная расчётная ячейка сохранена посимвольно; добавлена отдельная ячейка оформления. Исходные статистические выводы не исправлялись. Это не подтверждение их корректности: замечания по содержанию по-прежнему нужно согласовать с командой.
+Все кодовые ячейки в `.ipynb` имеют метаданные скрытого источника. Поддержка зависит от среды: просмотрщик GitHub может показывать код. Для чтения без кода используйте HTML, в котором доступны отдельные переключатели и кнопки показа/скрытия всех ячеек.
 
-Все кодовые ячейки в `.ipynb` имеют метаданные скрытого источника. Поддержка зависит от среды: просмотрщик GitHub может показывать код; гарантированный режим чтения без кода предоставлен отдельным HTML. Файлы не являются статическими скриншотами вместо исследования.
+## Пересчёт
 
-## Запуск
+Держать `ASE10.csv` рядом с ноутбуком. Установить зависимости из `requirements-design.txt` и выполнить ячейки сверху вниз. Для Colab загрузить CSV в рабочую среду. Сохранённые результаты видны без запуска. Формулы в HTML используют стандартный MathJax и могут требовать интернет.
 
-Держать `ASE10.csv` рядом с ноутбуком. Установить зависимости из `requirements-design.txt` и выполнить ячейки сверху вниз. Для Colab загрузить оба файла. Просмотр сохранённых результатов не требует запуска. Формулы в HTML используют стандартный MathJax из экспорта nbconvert и могут требовать интернет.
+## Воспроизводимость
 
-## Сборка
+`design/build_report.py` восстанавливает подготовленную редакцию из `design/notebook_source.json.gz.b64` и расчётных ячеек исходного commit. Проверяются контрольные суммы и тождественность исходного кода, затем оформленный и контрольный ноутбуки выполняются отдельно. При отличиях в численных результатах сборка останавливается. Успешный результат сохраняется только в ветке `design-layout`.
 
-`design/build_report.py` восстанавливает подготовленную редакцию из `design/notebook_source.json.gz.b64` и оригинальных расчётных ячеек фиксированного commit. Сначала проверяются контрольные суммы, затем ноутбук и контрольный исходник выполняются отдельно. При отличиях в текстовых численных результатах сборка останавливается. После успешной сборки workflow сохраняет результаты только в `design-layout`.
-
-Авторы и группы пока не заполнены. Ветка `generator` не объединялась. Для передачи изменений основной команде требуется отдельное согласование; автоматического merge нет.
+Авторы и группы пока не заполнены. Ветка `generator` не объединялась. Автоматического merge в основную ветку нет.
 '''
     (ROOT / 'DESIGN_README.md').write_text(readme, encoding='utf-8')
     print(json.dumps(verification, ensure_ascii=False, indent=2), flush=True)
