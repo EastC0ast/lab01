@@ -24,6 +24,7 @@ REPO = 'https://github.com/EastC0ast/lab01'
 BRANCH = 'design-layout'
 CALCULATIONS = REPO + '/blob/' + BRANCH + '/lab01_calculations.ipynb'
 RAW = 'https://raw.githubusercontent.com/EastC0ast/lab01/' + BRANCH + '/'
+REPORT = REPO + '/blob/' + BRANCH + '/REPORT.md'
 
 
 def string(value):
@@ -47,6 +48,27 @@ def reader_contents(source):
         '**[7. Дополнительное задание КТвД](#additional-assignment)**  \n'
         '[Рукописные знаки](#additional-assignment) · [Генератор marimo](#additional-assignment)\n\n'
         '[Указатель рисунков и таблиц](#figure-index)')
+
+
+def notebook_navigation(source):
+    """GitHub's notebook iframe rewrites fragment-only URLs to a broken path.
+
+    Send notebook navigation to the native Markdown reader. Keep local fragments
+    in REPORT.md and the downloadable HTML so those viewers scroll in place.
+    """
+    source = re.sub(r'\]\(#([^\s)]+)\)',
+                    lambda m: '](' + REPORT + '#' + m.group(1) + ')', source)
+    return re.sub(r'href="#([^"]+)"',
+                  lambda m: 'href="' + REPORT + '#' + m.group(1) + '"', source)
+
+
+def native_markdown_source(cell):
+    source = cell.source
+    if source.startswith('<div class="lab-result"') or source.startswith('<div style="white-space:pre-wrap">'):
+        # GitHub strips CSS, including white-space:pre-wrap. Explicit line breaks
+        # preserve printed results without presenting them as executable code.
+        source = source.replace('\n', '<br>\n')
+    return source
 
 
 def main():
@@ -186,7 +208,12 @@ def main():
     source_figures = sum('image/png' in o.get('data', {}) for c in code_cells
                          for o in c.get('outputs', []))
     assert figure == source_figures
-    nbformat.write(report, source_path)
+    (ROOT / 'REPORT.md').write_text(
+        '\n\n'.join(native_markdown_source(c) for c in report.cells) + '\n', encoding='utf-8')
+    notebook_reader = copy.deepcopy(report)
+    for cell in notebook_reader.cells:
+        cell.source = notebook_navigation(cell.source)
+    nbformat.write(notebook_reader, source_path)
 
     # Offline HTML: the same reader, with PNG data embedded instead of network URLs.
     body, _ = HTMLExporter(template_name='lab').from_notebook_node(report)
@@ -222,6 +249,8 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
 
     checks = {
         'reader_notebook': 'lab01.ipynb', 'reader_code_cells': 0,
+        'github_reader': 'REPORT.md', 'notebook_navigation_target': REPORT,
+        'html_navigation': 'local fragments',
         'calculation_notebook': 'lab01_calculations.ipynb',
         'calculation_notebook_byte_identical_to_executed_input': True,
         'calculation_sha256': hashlib.sha256(source_bytes.replace(b'\r\n', b'\n')).hexdigest(),
@@ -244,12 +273,19 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
     readme = ROOT / 'DESIGN_README.md'
     notice = '''# Лабораторная № 1 · КТвД
 
-**Основной файл [lab01.ipynb](lab01.ipynb) — отчёт без единой кодовой ячейки.**
+**[Открыть основной отчёт на GitHub → REPORT.md](REPORT.md)**
+
+Это читательская страница с работающим оглавлением и перекрёстными ссылками.
+Её можно отправить преподавателю; запускать программы не требуется.
 В нём сохранены исходные формулы, таблицы и все 15 рассчитанных графиков.
 Сразу после титульника расположено оглавление. Добавлены справочные обозначения
 и ссылки на дополнительное задание; содержательные выводы команды сохранены.
-Это читательская версия: её не нужно выполнять. Графики загружаются из этого
-репозитория; для их просмотра в GitHub/Colab требуется интернет.
+Графики загружаются из этого репозитория; для просмотра на GitHub требуется интернет.
+
+**[lab01.ipynb](lab01.ipynb)** — та же читательская версия без кодовых ячеек.
+В просмотрщике ноутбуков GitHub локальные якоря переписываются неверно, поэтому
+её оглавление и перекрёстные ссылки открывают разделы основной страницы `REPORT.md`.
+В скачанном HTML переходы работают внутри самого документа.
 
 **[lab01_calculations.ipynb](lab01_calculations.ipynb) — полный исполняемый файл.**
 Все его расчётные ячейки и сохранённые результаты сохранены. Для пересчёта открывайте

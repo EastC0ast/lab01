@@ -19,6 +19,11 @@ ROOT = Path(__file__).resolve().parents[1]
 BASELINE = '20615ee57015a07cb5134ae929b582c2dd054b88'
 AUTHOR_BASE = 'f857ccb2bc1ba39f29be79677d018fc7e0d2d28c'
 RAW = 'https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/'
+REPORT = 'https://github.com/EastC0ast/lab01/blob/design-layout/REPORT.md'
+
+
+def local_navigation(source):
+    return source.replace(REPORT + '#', '#')
 
 
 def saved(path):
@@ -130,7 +135,14 @@ def main():
     reader_map = {c.id: c for c in reader.cells}
     for cell in full.cells:
         if cell.cell_type == 'markdown' and cell.id != 'design-contents':
-            assert reader_map[cell.id].source == cell.source, ('Author prose changed', cell.id)
+            assert local_navigation(reader_map[cell.id].source) == cell.source, ('Author prose changed', cell.id)
+    native_markdown = (ROOT / 'REPORT.md').read_text(encoding='utf-8')
+    expected_local = '\n\n'.join(local_navigation(c.source) for c in reader.cells) + '\n'
+    assert native_markdown.replace('<br>\n', '\n') == expected_local, 'Native reader lost or changed content'
+    notebook_markdown = '\n'.join(c.source for c in reader.cells)
+    assert not re.search(r'\]\(#|href="#', notebook_markdown), 'Fragment-only navigation breaks in GitHub notebook viewer'
+    notebook_destinations = re.findall(re.escape(REPORT) + r'#([^\s)"<>]+)', notebook_markdown)
+    assert len(notebook_destinations) >= 123
     page = BeautifulSoup((ROOT / 'lab01_reading.html').read_text(encoding='utf-8'), 'html.parser')
     assert not page.select('.jp-CodeCell, details.lab-code')
     assert all(page.find(id='cell-id=' + c.id) is not None for c in reader.cells)
@@ -163,7 +175,7 @@ def main():
                 assert html_cell is not None and table_cells(str(html_cell)) == expected
                 tables += 1
     assert figures == 15 and tables == 4
-    markdown = '\n'.join(c.source for c in reader.cells)
+    markdown = native_markdown
     targets = set(re.findall(r'(?:id|name)="([^"]+)"', markdown))
     links = re.findall(r'\]\(#([^\s)]+)\)', markdown) + re.findall(r'href="#([^"]+)"', markdown)
     assert not set(links) - targets
@@ -178,6 +190,9 @@ def main():
         'saved_figures_byte_identical': figures, 'calculation_tables_identical': tables,
         'stdout_blocks_identical': streams, 'html_stdout_blocks_identical': streams,
         'html_reader_cells_present': len(reader.cells), 'broken_internal_links': [],
+        'github_reader': 'REPORT.md', 'native_reader_matches_notebook_content': True,
+        'notebook_links_to_native_reader': len(notebook_destinations),
+        'fragment_only_links_in_notebook': 0, 'html_navigation_stays_local': True,
         'author_conclusions_unchanged': True,
         'units_verified': False, 'content_questions': 'design/REVIEW_NOTES.md',
         'handwriting_results_recovered': False,

@@ -1,6 +1,9 @@
 {
   "reader_notebook": "lab01.ipynb",
   "reader_code_cells": 0,
+  "github_reader": "REPORT.md",
+  "notebook_navigation_target": "https://github.com/EastC0ast/lab01/blob/design-layout/REPORT.md",
+  "html_navigation": "local fragments",
   "calculation_notebook": "lab01_calculations.ipynb",
   "calculation_notebook_byte_identical_to_executed_input": true,
   "calculation_sha256": "9d80a29396ed85ef0d0900064a9ee3dead45ae5f2dd4dc0d51759ec9e9a9a1d3",
