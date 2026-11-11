@@ -1,0 +1,49 @@
+name: Build design report
+
+on:
+  push:
+    branches: [design-layout]
+    paths:
+      - 'design/notebook_source.json.gz.b64'
+      - 'design/build_report.py'
+      - 'requirements-design.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: design-report-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    if: github.repository == 'EastC0ast/lab01' && github.ref == 'refs/heads/design-layout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: design-layout
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install notebook dependencies
+        run: python -m pip install -r requirements-design.txt
+      - name: Execute, verify and export the report
+        env:
+          MPLBACKEND: Agg
+        run: python design/build_report.py
+      - name: Commit rendered results to design-layout only
+        run: |
+          test "$(git branch --show-current)" = "design-layout"
+          git add lab01.ipynb lab01_reading.html DESIGN_README.md design/style_layer.py design/report.css checks/render_verification.json
+          if git diff --cached --quiet; then
+            echo "No output changes."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'design: save executed notebook and reader with hidden code'
+          git push origin HEAD:refs/heads/design-layout
