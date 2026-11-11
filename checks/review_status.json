@@ -23,8 +23,9 @@
     "reason": "Browser automation stopped because the current Windows browser URL could not be determined reliably; no further UI actions were attempted."
   },
   "browser_visual_review": {
-    "status": "pending_postpublication_review",
-    "target": "design/handwriting/README.md",
+    "status": "passed",
+    "evidence": "checks/handwriting_browser_review.json",
+    "screenshot": "checks/handwriting_browser_main.jpg",
     "main_report": "REPORT.md#additional-assignment"
   }
 }

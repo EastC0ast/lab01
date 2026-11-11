@@ -1,0 +1,24 @@
+{
+  "review_date": "2026-11-11",
+  "status": "passed",
+  "reviewed_branch": "design-layout",
+  "reviewed_commit": "3bb0a6e6666f6c0e69ea6e1be3129438215030db",
+  "public_page": "https://github.com/EastC0ast/lab01/blob/design-layout/design/handwriting/README.md",
+  "unauthenticated_browser": true,
+  "loaded_png_figures": 5,
+  "rendered_display_formulas": 5,
+  "rendering_errors": 0,
+  "tables_including_criteria": 5,
+  "custom_navigation_targets_found": 8,
+  "clicked_readme_sections": [
+    "hw-variables",
+    "hw-association"
+  ],
+  "clicked_round_trip_between_reports": true,
+  "reader_notebook_loaded_with_figures_tables_and_math": true,
+  "reader_notebook_eda_link_opened_native_readme_section": true,
+  "reader_notebook_destination": "https://github.com/EastC0ast/lab01/blob/design-layout/design/handwriting/README.md#hw-eda",
+  "main_report_section": "https://github.com/EastC0ast/lab01/blob/design-layout/REPORT.md#additional-assignment",
+  "screenshot": "checks/handwriting_browser_main.jpg",
+  "scope_note": "Browser read-only review. Numeric and output integrity checks are recorded separately in design/handwriting/verification.json."
+}
