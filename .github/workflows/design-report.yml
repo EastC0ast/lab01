@@ -6,6 +6,7 @@ on:
     paths:
       - 'design/notebook_source.json.gz.b64'
       - 'design/build_report.py'
+      - 'design/make_reader.py'
       - 'requirements-design.txt'
       - '.github/workflows/design-report.yml'
   workflow_dispatch:
@@ -73,17 +74,40 @@ jobs:
           assert not html.select('details.lab-code[open]'), 'Code must be collapsed by default'
           assert html.select_one('#contents') is not None
           assert html.select_one('#top') is not None
-          print('Reader verified: all prose visible, 22 code panels collapsed.')
+          print('Executed version verified: prose visible, 22 code panels collapsed.')
+          PY
+      - name: Create code-free reader and keep full executable notebook
+        run: |
+          python design/make_reader.py
+          python - <<'PY'
+          import json, nbformat
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+          reader = nbformat.read('lab01.ipynb', as_version=4)
+          full = nbformat.read('lab01_calculations.ipynb', as_version=4)
+          checks = json.loads(Path('checks/code_visibility.json').read_text())
+          assert all(c.cell_type == 'markdown' for c in reader.cells)
+          assert sum(c.cell_type == 'code' for c in full.cells) == 22
+          assert checks['figures_preserved'] == 15
+          assert checks['tables_preserved'] == 4
+          assert checks['calculation_notebook_byte_identical_to_executed_input']
+          assert not checks['broken_links']
+          html = BeautifulSoup(Path('lab01_reading.html').read_text(), 'html.parser')
+          assert not html.select('.jp-CodeCell')
+          assert len(html.find_all('img')) == 15
+          assert html.select_one('#contents') is not None
+          assert html.select_one('#top') is not None
+          print('Code-free reader verified; complete calculations preserved.')
           PY
       - name: Commit rendered results to design-layout only
         run: |
           test "$(git branch --show-current)" = "design-layout"
-          git add lab01.ipynb lab01_reading.html DESIGN_README.md design/style_layer.py design/report.css design/build_report.py checks/render_verification.json
+          git add lab01.ipynb lab01_calculations.ipynb lab01_reading.html DESIGN_README.md assets/report design/style_layer.py design/report.css design/build_report.py checks/render_verification.json checks/code_visibility.json
           if git diff --cached --quiet; then
             echo "No output changes."
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'design: publish verified notebook and reader with visible text'
+          git commit -m 'design: publish code-free reader and complete executable notebook'
           git push origin HEAD:refs/heads/design-layout
