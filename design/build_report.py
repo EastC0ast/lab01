@@ -29,10 +29,13 @@ def source_hash(notebook):
 
 
 def text_results(cell):
-    result = []
+    """Compare printed results, not transport-dependent stdout chunk boundaries."""
+    streams = {}
+    displays = []
     for output in cell.get('outputs', []):
         if output.output_type == 'stream':
-            result.append(('stream', output.text))
+            name = output.get('name', 'stdout')
+            streams[name] = streams.get(name, '') + output.text
         elif output.output_type in ('execute_result', 'display_data'):
             data = output.get('data', {})
             if 'image/png' in data or 'image/svg+xml' in data:
@@ -41,8 +44,8 @@ def text_results(cell):
                 value = data['text/plain']
                 if value.startswith('<IPython.core.display.HTML object>'):
                     continue
-                result.append(('text', value))
-    return result
+                displays.append(('text', value))
+    return [('stream:' + name, streams[name]) for name in sorted(streams) if streams[name]] + displays
 
 
 def execute(notebook):
@@ -50,8 +53,18 @@ def execute(notebook):
         if cell.cell_type == 'code':
             cell.outputs = []
             cell.execution_count = None
-    NotebookClient(notebook, timeout=150, kernel_name='python3',
-                   resources={'metadata': {'path': str(ROOT)}}).execute()
+    # Configure the rendering environment, without modifying stored author code.
+    bootstrap = nbformat.v4.new_code_cell(
+        "get_ipython().run_line_magic('matplotlib', 'inline')\n"
+        "import logging\n"
+        "logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)",
+        id='build-environment')
+    notebook.cells.insert(0, bootstrap)
+    try:
+        NotebookClient(notebook, timeout=150, kernel_name='python3',
+                       resources={'metadata': {'path': str(ROOT)}}).execute()
+    finally:
+        notebook.cells.pop(0)
     nbformat.validate(notebook)
     return notebook
 
@@ -126,6 +139,11 @@ def main():
     missing = sorted(set(links) - targets)
     if missing:
         raise RuntimeError('Broken internal links: ' + repr(missing))
+    figures = sum('image/png' in output.get('data', {}) for cell in notebook.cells for output in cell.get('outputs', []))
+    if figures != 15:
+        raise RuntimeError('Expected 15 saved plots; got ' + str(figures))
+    if source_hash(notebook) != packet['expected_source_sha256']:
+        raise RuntimeError('Execution altered notebook source.')
     nbformat.write(notebook, str(ROOT / 'lab01.ipynb'))
 
     exported = copy.deepcopy(notebook)
@@ -166,7 +184,6 @@ details.lab-code summary{cursor:pointer;color:#245b78;font-size:13px;padding:5px
         toolbar.append(button)
     soup.body.insert(0, toolbar)
     (ROOT / 'lab01_reading.html').write_text(str(soup), encoding='utf-8')
-    figures = sum('image/png' in output.get('data', {}) for cell in notebook.cells for output in cell.get('outputs', []))
     verification = {
         'source_commit': BASE, 'source_blob': BLOB, 'source_code_cells_preserved': len(original_code),
         'source_code_identical': True, 'source_matches_prepared_edition': True,
