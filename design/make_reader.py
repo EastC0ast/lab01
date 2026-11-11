@@ -61,8 +61,9 @@ def reader_title():
 
 def reader_contents(source):
     return source.replace(
-        'Код свёрнут; результаты расчётов оставлены видимыми.',
-        'В читательской версии код отсутствует; результаты расчётов оставлены видимыми.').replace(
+        '\n\nКод свёрнут; результаты расчётов оставлены видимыми. '
+        'Навигационные ссылки размещены в начале и конце крупных разделов.',
+        '').replace(
         '[Указатель рисунков и таблиц](#figure-index)',
         '**[7. Дополнительное задание КТвД](#additional-assignment)**  \n'
         '[Рукописные знаки](#additional-assignment) · [Генератор marimo](#additional-assignment)\n\n'
@@ -127,11 +128,6 @@ def main():
                 cells[-1].source = reader_title()
             if cell.id == 'design-contents':
                 cells[-1].source = reader_contents(cells[-1].source)
-                cells.append(md_cell(
-                    '> **Режим чтения — без кода.** Текст, формулы, таблицы и графики '
-                    'сохранены. Для пересчёта откройте [полный исполняемый ноутбук]('
-                    + CALCULATIONS + '). Эта версия содержит только сохранённые результаты.',
-                    'reader-notice'))
             if cell.id == 'design-data':
                 cells.append(md_cell((ROOT / 'design/reader_notes.md').read_text(encoding='utf-8'),
                                      'reader-notation'))
@@ -175,7 +171,7 @@ def main():
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(png)
                 assert target.read_bytes() == png
-                cells.append(md_cell('![График %02d — сохранённый результат расчёта](%s%s)'
+                cells.append(md_cell('![Рисунок %02d](%s%s)'
                                      % (figure, RAW, relative), output_id))
                 assets.append({'path': relative, 'sha256': digest})
             elif 'text/html' in data:
@@ -228,7 +224,7 @@ def main():
     expected = dict(originals)
     expected['design-title'] = reader_title()
     expected['design-contents'] = reader_contents(expected['design-contents'])
-    assert preserved == expected, 'Existing report text was changed beyond the reader notice'
+    assert preserved == expected, 'Existing report text was changed beyond the explicit presentation overrides'
     markdown = '\n'.join(c.source for c in report.cells)
     targets = set(re.findall(r'(?:id|name)="([^"]+)"', markdown))
     links = re.findall(r'\]\(#([^\s)]+)\)', markdown) + re.findall(r'href="#([^"]+)"', markdown)
@@ -267,7 +263,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
     page.head.append(style)
     toolbar = page.new_tag('nav', attrs={'class': 'lab-toolbar'})
     for label, href in [('Оглавление', '#contents'), ('Выводы', '#resume'),
-                        ('Рисунки и таблицы', '#figure-index'), ('Полная версия с кодом', CALCULATIONS)]:
+                        ('Рисунки и таблицы', '#figure-index'), ('Расчёты', CALCULATIONS)]:
         link = page.new_tag('a', href=href)
         link.string = label
         toolbar.append(link)
@@ -300,71 +296,18 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
     print(json.dumps({k: v for k, v in checks.items() if k not in ('assets', 'result_checks')},
                      ensure_ascii=False, indent=2))
     readme = ROOT / 'DESIGN_README.md'
-    notice = '''# Лабораторная № 1 · КТвД
+    notice = '''# Лабораторная работа № 1
 
-**[Открыть основной отчёт на GitHub → REPORT.md](REPORT.md)**
+[Отчёт](REPORT.md) · [Расчёты](lab01_calculations.ipynb) · [Скачать HTML](https://github.com/EastC0ast/lab01/raw/refs/heads/design-layout/lab01_reading.html)
 
-Это читательская страница с работающим оглавлением и перекрёстными ссылками.
-Её можно отправить преподавателю; запускать программы не требуется.
-Сохранены исходные формулы, таблицы и все 15 рассчитанных графиков.
-Сразу после титульника расположено оглавление. Добавлены справочные обозначения
-и ссылки на дополнительное задание; содержательные выводы команды сохранены.
-Графики загружаются из этого репозитория; для просмотра на GitHub требуется интернет.
+[Исследование рукописных знаков](design/handwriting/README.md)
 
-**[lab01.ipynb](lab01.ipynb)** — та же читательская версия без кодовых ячеек.
-В просмотрщике ноутбуков GitHub локальные якоря переписываются неверно, поэтому
-её оглавление и перекрёстные ссылки открывают разделы основной страницы `REPORT.md`.
-В скачанном HTML переходы работают внутри самого документа.
+## Генератор случайных чисел
 
-**[lab01_calculations.ipynb](lab01_calculations.ipynb) — полный исполняемый файл.**
-Все его расчётные ячейки и сохранённые результаты сохранены. Для пересчёта открывайте
-его, а не читательскую версию. Файл ASE10.csv должен находиться рядом.
+[Открыть marimo](https://marimo.app/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm?embed=true&mode=read&include-code=false&show-code=false)
 
-**[lab01_reading.html](lab01_reading.html)** — скачать и открыть в браузере.
-Кода в этой версии тоже нет; изображения встроены в файл. Формулы используют
-MathJax и могут требовать соединение с интернетом.
-
-Проверка сохранности: [checks/code_visibility.json](checks/code_visibility.json).
-Новая независимая проверка и пересчёт:
-[checks/current_verification.json](checks/current_verification.json).
-Историческая проверка сборки: [checks/render_verification.json](checks/render_verification.json).
-
-## Дополнительное задание
-
-- **[Открыть marimo в браузере без установки программ](https://marimo.app/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm?embed=true&mode=read&include-code=false&show-code=false)**.
-  Дождаться первой загрузки, изменить поля и нажать «Сгенерировать».
-- [Интерактивный генератор в marimo](designer_generator/README.md): методы команды
-  из ветки `generator` перенесены отдельно, без merge. Известное расхождение GD
-  показано в интерфейсе; формула команды не исправлялась.
-- [Исследование рукописных знаков](design/handwriting/README.md): 120 записей
-  латинской `a` от 60 авторов, ширина и высота в мм, EDA и проверка связи.
-  Это новое исследование открытого UCI UJI Pen Characters 2, а не восстановление
-  прежних измерений команды. [Расчёты и проверка](design/handwriting/REPRODUCIBILITY.md).
-- [Замечания к единицам и выводам](design/REVIEW_NOTES.md): вопросы для согласования
-  с инфохимиками; они не исправлены автоматически.
-
-## Проверка и повторный экспорт
-
-Работать из корня репозитория. Установить `requirements-verified.txt` и выполнить:
-
-```sh
-python design/make_reader.py --input lab01_calculations.ipynb
-python design/verify_report.py --execute
-python -m unittest discover -s designer_generator -p 'test_*.py'
-python -m marimo check --strict designer_generator/app.py
-```
-
-Первый шаг повторно строит читательскую версию из сохранённых результатов,
-не записывая исполняемый ноутбук. Проверка исполняет отдельную копию в памяти,
-сопоставляет численные результаты и проверяет графики, таблицы и ссылки.
-Старый `design/build_report.py` восстанавливает историческую редакцию из
-упакованного источника; для обычных правок читательской версии его запуск не нужен.
-
-Изменения публикуются только в `design-layout`. Проверки GitHub работают с правами
-чтения и не записывают результаты в ветки. `master`, `design` и исходный репозиторий
-`ffriewrya/lab01` не изменяются. Авторы и распределение ролей на титульнике взяты
-из `design/team.json` по сведениям команды; номера групп не указаны.
-
+Дождитесь загрузки приложения, задайте параметры и нажмите «Сгенерировать».
+Таблицы и графики обновятся после нажатия кнопки.
 '''
     readme.write_text(notice.rstrip() + '\n', encoding='utf-8')
 

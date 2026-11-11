@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "checked_at_utc": "2026-11-11T11:30:49.957309+00:00",
+  "checked_at_utc": "2026-11-11T13:39:40.365320+00:00",
   "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
   "packages": {
     "marimo": "0.25.2",
@@ -14,7 +14,7 @@
       "command": "python -m unittest designer_generator.test_generator -v",
       "exit_code": 0,
       "stdout": "",
-      "stderr": "test_exact_arrays_and_attempt_counts_match_original (designer_generator.test_generator.GeneratorPresentationTests.test_exact_arrays_and_attempt_counts_match_original) ... ok\ntest_invalid_parameters_are_rejected_before_generation (designer_generator.test_generator.GeneratorPresentationTests.test_invalid_parameters_are_rejected_before_generation) ... ok\ntest_reproducibility_and_global_rng_isolation (designer_generator.test_generator.GeneratorPresentationTests.test_reproducibility_and_global_rng_isolation) ... ok\ntest_source_cell_is_unchanged (designer_generator.test_generator.GeneratorPresentationTests.test_source_cell_is_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.246s\n\nOK\n"
+      "stderr": "test_exact_arrays_and_attempt_counts_match_original (designer_generator.test_generator.GeneratorPresentationTests.test_exact_arrays_and_attempt_counts_match_original) ... ok\ntest_invalid_parameters_are_rejected_before_generation (designer_generator.test_generator.GeneratorPresentationTests.test_invalid_parameters_are_rejected_before_generation) ... ok\ntest_reproducibility_and_global_rng_isolation (designer_generator.test_generator.GeneratorPresentationTests.test_reproducibility_and_global_rng_isolation) ... ok\ntest_source_cell_is_unchanged (designer_generator.test_generator.GeneratorPresentationTests.test_source_cell_is_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.063s\n\nOK\n"
     },
     {
       "command": "python -m marimo check --strict designer_generator/app.py",
@@ -31,11 +31,11 @@
   ],
   "source_commit": "01a1c6ce89d076e969bf0a8300fcd9abc2c96e36",
   "sha256": {
-    "designer_generator/app.py": "a58c91478f213e73ec0fe159557d41e4f62885fbd845e8bb6af71e6ecae0de60",
+    "designer_generator/app.py": "2246c60e6230faa13376bd5a3efc09d16475d3eb13b7ad701ffaf4041ed88b69",
     "designer_generator/core.py": "bcb99bf1a9b2aaae4d871386bfb71c3ab025974e8497253cd8e79ed733dc21e0",
     "designer_generator/original_generators.py": "e30ed6d5bcfef3dc8e17310d8224bcff1e28d7f21a55aa0070519d640237561e",
     "ASE10.csv": "0e82e37f9747b7919d03b1c0c9312e926fe30b9035870790dadf2bed34d16b27",
-    "designer_generator/preview.html": "e1e7f016c2ac11db0c2b94fd0bdb91f4c03664b763e695b4c607d8424895e8f6"
+    "designer_generator/preview.html": "4ef6fafa23632e86b28a339b91a4c586a8c2cc6cb27b15ee21701c2efe695393"
   },
   "data_observations": 3686,
   "fitted_parameters": {

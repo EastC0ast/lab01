@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.25.2"
-app = marimo.App(width="medium", app_title="Лабораторная № 1 · Генератор команды")
+app = marimo.App(width="medium", app_title="Лабораторная № 1 · Генерация сигнала NO₂")
 
 
 @app.cell
@@ -23,38 +23,36 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(SOURCE_COMMIT, mo):
-    mo.md(rf"""
+def _(mo):
+    mo.md(r"""
     # Лабораторная работа № 1
-    ## Интерактивное представление генератора команды
+    ## Генерация сигнала датчика NO₂
 
     **Прикладная статистика · КТвД**
 
     [1. Метод](#method) · [2. Параметры](#parameters) · [3. Результаты](#results)
 
     <a id="method"></a>
-    ### 1. Метод и границы представления
+    ### 1. Модель и методы генерации
 
-    Исследуется одна величина — сигнал **ASE_NO2**. Параметры гамма-модели
-    оцениваются по `ASE10.csv` тем же вызовом `scipy.stats.gamma.fit`, что у команды.
-    Воспроизведены **алгоритм А** и **исходная реализация GD** из
-    [ветки generator](https://github.com/EastC0ast/lab01/blob/{SOURCE_COMMIT}/lab01.ipynb).
-    Обе функции перенесены посимвольно. Ветку generator не объединяли.
+    Для моделирования сигнала **ASE_NO2** используется гамма-распределение.
+    Его параметры оцениваются по наблюдениям датчика. Сравниваются
+    **алгоритм А** и **алгоритм GD**.
 
     Для параметров $a>1$, $\theta>0$ и $x>\ell$ заданная модель имеет плотность
-    $$f(x)=\frac{{1}}{{\Gamma(a)\theta}}
-    \left(\frac{{x-\ell}}{{\theta}}\right)^{{a-1}}
-    \exp\!\left(-\frac{{x-\ell}}{{\theta}}\right).$$
+    $$f(x)=\frac{1}{\Gamma(a)\theta}
+    \left(\frac{x-\ell}{\theta}\right)^{a-1}
+    \exp\!\left(-\frac{x-\ell}{\theta}\right).$$
     Здесь $a$ — форма, $\ell$ — сдвиг, $\theta$ — масштаб.
-    Исходное обоснование выбора гамма-модели требует доработки командой:
-    асимметрия сама по себе не доказывает этот закон распределения.
+    Гамма-модель рассматривается как приближение: одна асимметрия данных
+    не определяет вид распределения.
 
-    **Замечание для согласования.** В коде GD возвращается
+    **Особенность GD.** В реализации используется преобразование
     $\ell+\theta(2a-x^2)$, а в описании метода — $\ell+\theta x^2$.
-    Расхождение сохранено. Поэтому сходство кривых и скорость не служат
-    подтверждением корректности GD. Ниже показаны диагностические показатели.
-    Числовой сигнал не пересчитывается: единицы ASE_NO2 требуют подтверждения
-    по описанию датчика (в исходной ветке указаны мкВ).
+    Это меняет распределение и может давать значения ниже $\ell$.
+    Расхождение с гамма-моделью оценивается по графикам и показателям в таблице 2.
+
+    Единица измерения ASE_NO2 не уточнена; сигнал приведён в единицах исходных данных.
     """)
     return
 
@@ -69,14 +67,14 @@ def _(fit_parameters, load_no2):
 @app.cell(hide_code=True)
 def _(fitted, mo):
     n_control = mo.ui.number(start=100, stop=20000, step=100, value=1000, label="Число значений N")
-    seed_control = mo.ui.number(start=0, stop=4294967295, step=1, value=40, label="Seed")
+    seed_control = mo.ui.number(start=0, stop=4294967295, step=1, value=40, label="Начальное число (seed)")
     shape_control = mo.ui.number(start=1.000001, stop=1000, value=fitted[0], label="Форма a (> 1, до 1000)")
-    loc_control = mo.ui.number(start=-1e9, stop=1e9, value=fitted[1], label="Сдвиг loc")
-    scale_control = mo.ui.number(start=.000001, stop=1e6, value=fitted[2], label="Масштаб scale (> 0)")
+    loc_control = mo.ui.number(start=-1e9, stop=1e9, value=fitted[1], label="Сдвиг ℓ (loc)")
+    scale_control = mo.ui.number(start=.000001, stop=1e6, value=fitted[2], label="Масштаб θ (scale > 0)")
     parameter_form = mo.ui.dictionary({"n": n_control, "seed": seed_control, "a": shape_control,
                                        "loc": loc_control, "scale": scale_control}).form(
                                            submit_button_label="Сгенерировать", show_clear_button=False)
-    mo.vstack([mo.md("<a id='parameters'></a>\n\n### 2. Параметры\nНачальные значения — оценка команды по исходным данным. Изменения применяются кнопкой."),
+    mo.vstack([mo.md("<a id='parameters'></a>\n\n### 2. Параметры\nНачальные параметры оценены по данным датчика. Измените значения и нажмите «Сгенерировать»."),
                parameter_form])
     return (parameter_form,)
 
@@ -104,7 +102,7 @@ def _(generated_a, generated_gd, mo, no2, np, plt, settings, stats):
         figure, axes = plt.subplots(1, 2, figsize=(11, 4.1), constrained_layout=True)
         _series = [(no2.to_numpy(), "Исходные данные", "#64748b"),
                    (generated_a["values"], "Алгоритм А", "#245c7a"),
-                   (generated_gd["values"], "GD: исходный код", "#a57240")]
+                   (generated_gd["values"], "Алгоритм GD", "#a57240")]
         _all = np.concatenate([_entry[0] for _entry in _series])
         _grid = np.linspace(_all.min(), _all.max(), 500)
         for _values, _label, _color in _series:
@@ -124,18 +122,18 @@ def _(generated_a, generated_gd, mo, no2, np, plt, settings, stats):
 @app.cell(hide_code=True)
 def _(diagnostics, generated_a, generated_gd, mo, no2, pd, settings, summary):
     summary_table = pd.DataFrame({"Исходные данные": summary(no2), "Алгоритм А": summary(generated_a["values"]),
-                                 "GD: исходный код": summary(generated_gd["values"])}).rename_axis("Показатель").reset_index()
+                                 "Алгоритм GD": summary(generated_gd["values"])}).rename_axis("Показатель").reset_index()
     performance_table = pd.DataFrame([
         {"Метод": _name, "N": len(_result["values"]), "Попыток": _result["attempts"],
          "Доля принятых, %": 100 * _result["acceptance"], "Время одного запуска, с": _result["seconds"],
          **diagnostics(_result["values"], settings["a"], settings["loc"], settings["scale"])}
-        for _name, _result in [("А", generated_a), ("GD: исходный код", generated_gd)]
+        for _name, _result in [("А", generated_a), ("GD", generated_gd)]
     ])
-    mo.vstack([mo.md("**Таблица 1 — описательные характеристики.** Дисперсия и стандартное отклонение используют ddof=1, как у команды. Для суммы единицы совпадают с сигналом, для дисперсии — квадрат единиц сигнала; остальные характеристики имеют единицы сигнала."),
-               mo.ui.table(summary_table, selection=None, page_size=12),
-               mo.md("**Таблица 2 — работа генераторов и диагностика.** D — максимальное расстояние до заданной гамма-функции распределения. Показатель описательный; проверка гипотезы и p-value здесь не заявляются. Асимметрия и доля принятых безразмерны. Время одного запуска зависит от компьютера и не подтверждает превосходство метода."),
-               mo.ui.table(performance_table, selection=None),
-               mo.md(f"Применено: N={int(settings['n'])}, seed={int(settings['seed'])}, a={settings['a']:.6g}, loc={settings['loc']:.6g}, scale={settings['scale']:.6g}. Одинаковый seed повторяет выборки. У каждого алгоритма собственное состояние генератора случайных чисел.")])
+    mo.vstack([mo.md("**Таблица 1 — описательные характеристики.** Выборочные дисперсия и стандартное отклонение рассчитаны с делителем n−1. Дисперсия имеет квадрат единицы сигнала; остальные показатели — единицу сигнала."),
+               mo.ui.table(summary_table, selection=None, page_size=12, show_data_types=False),
+               mo.md("**Таблица 2 — работа генераторов и диагностика.** D — максимальное расстояние между эмпирической функцией распределения и гамма-моделью; это описательная мера расхождения. Асимметрия и доля принятых безразмерны. Время одного запуска зависит от условий выполнения."),
+               mo.ui.table(performance_table, selection=None, show_data_types=False),
+               mo.md(f"Применено: N={int(settings['n'])}, seed={int(settings['seed'])}, a={settings['a']:.6g}, loc={settings['loc']:.6g}, scale={settings['scale']:.6g}. Чтобы повторить выборку, используйте тот же seed.")])
     return
 
 

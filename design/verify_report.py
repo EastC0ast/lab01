@@ -133,6 +133,8 @@ def main():
     assert reader.cells[0].id == 'design-title' and reader.cells[1].id == 'design-contents'
     assert 'Код свёрнут' not in reader.cells[1].source
     reader_map = {c.id: c for c in reader.cells}
+    assert 'reader-notice' not in reader_map
+    assert 'Навигационные ссылки размещены' not in reader_map['design-contents'].source
     team = json.loads((ROOT / 'design/team.json').read_text(encoding='utf-8'))
     title = reader_map['design-title'].source
     for member in team['research']:

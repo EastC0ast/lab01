@@ -44,10 +44,6 @@
 
 [Указатель рисунков и таблиц](#figure-index)
 
-В читательской версии код отсутствует; результаты расчётов оставлены видимыми. Навигационные ссылки размещены в начале и конце крупных разделов.
-
-> **Режим чтения — без кода.** Текст, формулы, таблицы и графики сохранены. Для пересчёта откройте [полный исполняемый ноутбук](https://github.com/EastC0ast/lab01/blob/design-layout/lab01_calculations.ipynb). Эта версия содержит только сохранённые результаты.
-
 <a id="sprint1" name="sprint1" class="lab-anchor"></a>
 
 # Lab01 - Sprint 1
@@ -61,11 +57,10 @@
 ### 1.1 · Обозначения, единицы и формулы
 
 `ASE_NO2`, `ASE_T` и `ASE_CO` — названия столбцов в `ASE10.csv`.
-В файле данных нет описания физических единиц. Подписи «мкВ» и трактовка
-`ASE_T` как напряжения сохранены из версии команды и требуют подтверждения
-инфохимиками. Числовые шкалы и результаты ниже не менялись.
+В файле данных нет описания физических единиц. Единицы «мкВ» в подписях
+графиков и трактовка `ASE_T` как напряжения не подтверждены описанием датчика.
 На рисунках 02, 06 и 12 показаны накопленные частоты **после округления
-значений до целых**. Вопрос о положении ступеней вынесен на согласование.
+значений до целых**.
 
 Для чтения таблиц 02–04: среднее, медиана, минимум, максимум, мода,
 перцентиль и стандартное отклонение имеют единицу исходного столбца;
@@ -74,7 +69,6 @@
 
 Используемые обозначения: $n$ — число наблюдений после удаления пропусков,
 $x_i$ — значение наблюдения, $\bar{x}$ — выборочное среднее.
-Справочные формулы соответствуют операциям в расчётном ноутбуке:
 
 $$\bar{x}=\frac{1}{n}\sum_{i=1}^{n}x_i,\qquad
 s^2=\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2,\qquad s=\sqrt{s^2}.$$
@@ -93,8 +87,7 @@ $$r=\frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
 {\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2\sum_{i=1}^{n}(y_i-\bar{y})^2}}.$$
 
 В формулах плотности skew-normal в разделах 2.2.1 и 3.2.1 предполагается
-$\omega>0$. Этот справочный блок поясняет обозначения и не заменяет
-авторские интерпретации. [Вопросы для согласования](https://github.com/EastC0ast/lab01/blob/design-layout/design/REVIEW_NOTES.md).
+$\omega>0$.
 
 
 <a id="table01" name="table01" class="lab-anchor"></a>
@@ -242,9 +235,9 @@ $\omega>0$. Этот справочный блок поясняет обозна
 <br>
 </div>
 
-![График 01 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-01-baf11c063358.png)
+![Рисунок 01](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-01-baf11c063358.png)
 
-![График 02 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-02-b39d637c20dc.png)
+![Рисунок 02](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-02-b39d637c20dc.png)
 
 <div class="lab-result" style="white-space:pre-wrap;font-family:inherit;line-height:1.6"><br>
 Сумма: 107306226.23449999<br>
@@ -297,7 +290,7 @@ p-value: 1.2079291032735805e-82<br>
 
 <div class="lab-caption">Рисунок 03: нормализация NO2</div>
 
-![График 03 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-03-8a6dd6b8b124.png)
+![Рисунок 03](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-03-8a6dd6b8b124.png)
 
 <div class="lab-result" style="white-space:pre-wrap;font-family:inherit;line-height:1.6">Новый минимум: 0.0<br>
 Новый максимум: 1.0<br>
@@ -316,7 +309,7 @@ p-value: 1.2079291032735805e-82<br>
 
 <div class="lab-caption">Рисунок 04: оценка среднего NO2</div>
 
-![График 04 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-04-e1020020048f.png)
+![Рисунок 04](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-04-e1020020048f.png)
 
 Можно заметить, как значение среднего перестает колебаться и сводится к исходному при увеличении размера выборки.
 После отметки в 600 показаний, среднее перестает сильно колебаться. Возьмем выборку размером в 600 значений и проверим ее статистику.
@@ -435,9 +428,9 @@ p-value: 1.2079291032735805e-82<br>
 <br>
 </div>
 
-![График 05 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-05-c44fe3fca8aa.png)
+![Рисунок 05](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-05-c44fe3fca8aa.png)
 
-![График 06 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-06-4b197efa8ea8.png)
+![Рисунок 06](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-06-4b197efa8ea8.png)
 
 <div class="lab-result" style="white-space:pre-wrap;font-family:inherit;line-height:1.6"><br>
 Сумма: 46886.3627801<br>
@@ -490,7 +483,7 @@ p-value: 5.364291633817727e-08<br>
 
 <div class="lab-caption">Рисунок 07: нормализация температуры</div>
 
-![График 07 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-07-21ce465bd834.png)
+![Рисунок 07](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-07-21ce465bd834.png)
 
 <div class="lab-result" style="white-space:pre-wrap;font-family:inherit;line-height:1.6">Новый минимум: 0.0<br>
 Новый максимум: 1.0<br>
@@ -509,7 +502,7 @@ p-value: 5.364291633817727e-08<br>
 
 <div class="lab-caption">Рисунок 08: оценка среднего температуры</div>
 
-![График 08 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-08-019e8c5e96c2.png)
+![Рисунок 08](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-08-019e8c5e96c2.png)
 
 Можно заметить, как значение среднего перестает колебаться и сводится к исходному при увеличении размера выборки.
 После отметки в 600 показаний, среднее перестает сильно колебаться. Возьмем выборку размером в 600 значений и проверим ее статистику
@@ -628,13 +621,13 @@ p-value: 2.6736e-48<br>
 
 <div class="lab-caption">Рисунок 09: зависимость NO2 от температуры</div>
 
-![График 09 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-09-f8327e8c26a2.png)
+![Рисунок 09](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-09-f8327e8c26a2.png)
 
 <a id="fig10" name="fig10" class="lab-anchor"></a>
 
 <div class="lab-caption">Рисунок 10: матрица корреляции</div>
 
-![График 10 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-10-ed655e16878e.png)
+![Рисунок 10](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-10-ed655e16878e.png)
 
 <a id="dependence-conclusion" name="dependence-conclusion" class="lab-anchor"></a>
 
@@ -673,9 +666,9 @@ p-value: 2.6736e-48<br>
 <br>
 </div>
 
-![График 11 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-11-b347c59c2a1c.png)
+![Рисунок 11](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-11-b347c59c2a1c.png)
 
-![График 12 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-12-3f4663ba8017.png)
+![Рисунок 12](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-12-3f4663ba8017.png)
 
 <div class="lab-result" style="white-space:pre-wrap;font-family:inherit;line-height:1.6"><br>
 Сумма: 148429693.67587<br>
@@ -724,7 +717,7 @@ AIC skew-normal: 54990.6<br>
 AIC lognormal:   54961.4<br>
 </div>
 
-![График 13 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-13-635a0217ee9b.png)
+![Рисунок 13](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-13-635a0217ee9b.png)
 
 <a id="co-test-repeat" name="co-test-repeat" class="lab-anchor"></a>
 
@@ -743,7 +736,7 @@ p-value: 4.037314305072088e-224<br>
 
 <div class="lab-caption">Рисунок 14: нормализация CO</div>
 
-![График 14 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-14-709ec462f1c8.png)
+![Рисунок 14](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-14-709ec462f1c8.png)
 
 <div class="lab-result" style="white-space:pre-wrap;font-family:inherit;line-height:1.6">Новый минимум: 0.0<br>
 Новый максимум: 1.0<br>
@@ -762,7 +755,7 @@ p-value: 4.037314305072088e-224<br>
 
 <div class="lab-caption">Рисунок 15: оценка среднего CO</div>
 
-![График 15 — сохранённый результат расчёта](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-15-acbed1250b5c.png)
+![Рисунок 15](https://raw.githubusercontent.com/EastC0ast/lab01/design-layout/assets/report/figure-15-acbed1250b5c.png)
 
 На графике видно, что колебания среднего с ростом размера выборки затухают, и оно стабилизируется около среднего по всем данным. Начиная примерно с 600 показаний отклонение не превышает около 20 отсч. (меньше 0.05% от среднего). Поэтому для следующего шага возьмем выборку из 600 значений и сравним ее характеристики с генеральными.
 
@@ -903,17 +896,14 @@ p-value: 4.037314305072088e-224<br>
 
 ### 7.2 · Интерактивное представление генератора
 
-[Открыть генератор marimo в браузере — без установки программ](https://marimo.app/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm?embed=true&mode=read&include-code=false&show-code=false).
+[Открыть генератор marimo](https://marimo.app/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm?embed=true&mode=read&include-code=false&show-code=false).
 
-Дождитесь первой загрузки Python, измените параметры и нажмите «Сгенерировать».
-Таблицы и графики пересчитываются в вашем браузере. Вход в аккаунт не требуется;
-изменения параметров не записываются в репозиторий.
+Дождитесь загрузки приложения, задайте параметры и нажмите «Сгенерировать».
+Таблицы и графики обновятся после нажатия кнопки.
 
-[Приложение marimo и запуск](https://github.com/EastC0ast/lab01/blob/design-layout/designer_generator/README.md)
-представляют методы А и GD из ветки `generator` отдельно от основного анализа.
-Параметры и начальное состояние генератора можно менять в интерфейсе.
-Расхождение между формулой GD в тексте и реализацией команды отмечено явно;
-оно не исправлялось без согласования. Ветки не объединялись.
+Сравниваются алгоритмы А и GD для сигнала NO₂. Математическое описание GD
+и его реализация содержат разные выражения для преобразования результата.
+[Описание алгоритмов](https://github.com/EastC0ast/lab01/blob/design-layout/designer_generator/README.md).
 
 
 <a id="figure-index" name="figure-index" class="lab-anchor"></a>

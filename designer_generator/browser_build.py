@@ -41,7 +41,7 @@ The source algorithms are evaluated as Python, with no JavaScript replacement.
 import marimo
 
 __generated_with = "0.25.2"
-app = marimo.App(width="medium", app_title="Лабораторная № 1 · Генератор команды")
+app = marimo.App(width="medium", app_title="Лабораторная № 1 · Генерация сигнала NO₂")
 
 
 @app.cell

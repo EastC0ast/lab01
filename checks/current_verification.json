@@ -10,7 +10,7 @@
   "calculation_tables_identical": 4,
   "stdout_blocks_identical": 15,
   "html_stdout_blocks_identical": 15,
-  "html_reader_cells_present": 102,
+  "html_reader_cells_present": 101,
   "broken_internal_links": [],
   "github_reader": "REPORT.md",
   "native_reader_matches_notebook_content": true,
