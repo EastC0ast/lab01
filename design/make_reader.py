@@ -64,6 +64,9 @@ def notebook_navigation(source):
 
 def native_markdown_source(cell):
     source = cell.source
+    if source.startswith('<nav class="lab-nav"'):
+        source = re.sub(r'^<nav[^>]*>', '<p class="lab-native-navigation">', source)
+        source = source.replace('</nav>', '</p>').replace('</a><a', '</a> · <a')
     if source.startswith('<div class="lab-result"') or source.startswith('<div style="white-space:pre-wrap">'):
         # GitHub strips CSS, including white-space:pre-wrap. Explicit line breaks
         # preserve printed results without presenting them as executable code.
@@ -277,7 +280,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
 
 Это читательская страница с работающим оглавлением и перекрёстными ссылками.
 Её можно отправить преподавателю; запускать программы не требуется.
-В нём сохранены исходные формулы, таблицы и все 15 рассчитанных графиков.
+Сохранены исходные формулы, таблицы и все 15 рассчитанных графиков.
 Сразу после титульника расположено оглавление. Добавлены справочные обозначения
 и ссылки на дополнительное задание; содержательные выводы команды сохранены.
 Графики загружаются из этого репозитория; для просмотра на GitHub требуется интернет.

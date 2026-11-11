@@ -202,7 +202,7 @@ $\omega>0$. Этот справочный блок поясняет обозна
 </table>
 </div></div>
 
-<nav class="lab-nav" aria-label="Навигация по отчёту"><a href="#contents">↑ Оглавление</a><a href="#rv-no2">NO2 →</a></nav>
+<p class="lab-native-navigation"><a href="#contents">↑ Оглавление</a> · <a href="#rv-no2">NO2 →</a></p>
 
 <a id="variable1" name="variable1" class="lab-anchor"></a>
 <a id="rv-no2" name="rv-no2" class="lab-anchor"></a>
@@ -396,7 +396,7 @@ p-value: 1.2079291032735805e-82<br>
 Дисперсия выборки с возвращением заметно ниже, так как в нее могли попасть продублированные строки, в остальном данные не отличаются.
 Выборка без возвращения в целом более похожа на оригинальную
 
-<nav class="lab-nav" aria-label="Навигация по отчёту"><a href="#data">← Исходные данные</a><a href="#contents">↑ Оглавление</a><a href="#rv-temp">Температура →</a></nav>
+<p class="lab-native-navigation"><a href="#data">← Исходные данные</a> · <a href="#contents">↑ Оглавление</a> · <a href="#rv-temp">Температура →</a></p>
 
 <a id="rv-temp" name="rv-temp" class="lab-anchor"></a>
 
@@ -589,7 +589,7 @@ p-value: 5.364291633817727e-08<br>
 Дисперсия выборки с возвращением заметно ниже, так как в нее могли попасть продублированные строки, в остальном данные не отличаются.
 Выборка без возвращения в целом более похожа на оригинальную. Также заметим что, в отличие от NO2, распределение температуры имеет несколько пиков, что физически объясняется изменением температуры в течение суток, а тест на нормальность подтверждает, что распределение не является нормальным
 
-<nav class="lab-nav" aria-label="Навигация по отчёту"><a href="#rv-no2">← NO2</a><a href="#contents">↑ Оглавление</a><a href="#dependence">Зависимость →</a></nav>
+<p class="lab-native-navigation"><a href="#rv-no2">← NO2</a> · <a href="#contents">↑ Оглавление</a> · <a href="#dependence">Зависимость →</a></p>
 
 <a id="dependence" name="dependence" class="lab-anchor"></a>
 
@@ -634,7 +634,7 @@ p-value: 2.6736e-48<br>
 
 Поскольку связь все равно слабая, сама температура воздуха не главная причина изменения концентрации NO2. Например, в холода машины дольше греются, а выхлопные газы рассеиваются хуже, из-за чего уровень газа в воздухе в среднем выше, чем в теплую погоду. Также возможна ошибка прибора, что сам датчик может менять показания в зависимости от температуры
 
-<nav class="lab-nav" aria-label="Навигация по отчёту"><a href="#rv-temp">← Температура</a><a href="#contents">↑ Оглавление</a><a href="#rv-co">CO →</a></nav>
+<p class="lab-native-navigation"><a href="#rv-temp">← Температура</a> · <a href="#contents">↑ Оглавление</a> · <a href="#rv-co">CO →</a></p>
 
 <a id="rv-co" name="rv-co" class="lab-anchor"></a>
 
@@ -840,7 +840,7 @@ p-value: 4.037314305072088e-224<br>
 Основные показатели выборки из 600 значений очень близки к показателям генеральной совокупности: среднее отличается меньше чем на 0.1%. Значит, выборки такого объема подходят для суждения о всех данных.
 Дисперсия выборки немного ниже генеральной (примерно на 2-3%), это обычный разброс при таком размере выборки. Максимум и мода отличаются, так как редкие значения могли не попасть в выборку.
 
-<nav class="lab-nav" aria-label="Навигация по отчёту"><a href="#dependence">← Зависимость</a><a href="#contents">↑ Оглавление</a><a href="#resume">Итоги →</a></nav>
+<p class="lab-native-navigation"><a href="#dependence">← Зависимость</a> · <a href="#contents">↑ Оглавление</a> · <a href="#resume">Итоги →</a></p>
 
 <a id="resume" name="resume" class="lab-anchor"></a>
 
@@ -876,7 +876,7 @@ p-value: 4.037314305072088e-224<br>
 | lab.ic.01.10 | Independence & Estimations: [NO2](#no2-estimates), [ASE_T](#temp-estimates), [CO](#co-estimates) | 0,05 | |
 | lab.ic.01.11 | Математическая база распределения: [NO2](#no2-model), [ASE_T](#temp-model), [CO](#co-model) | 0,05 | Подпункт с гипотезой для каждой величины |
 
-<nav class="lab-nav" aria-label="Навигация по отчёту"><a href="#rv-co">← CO</a><a href="#contents">↑ Оглавление</a></nav>
+<p class="lab-native-navigation"><a href="#rv-co">← CO</a> · <a href="#contents">↑ Оглавление</a></p>
 
 <a id="additional-assignment" name="additional-assignment" class="lab-anchor"></a>
 

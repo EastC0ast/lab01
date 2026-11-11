@@ -138,13 +138,18 @@ def main():
             assert local_navigation(reader_map[cell.id].source) == cell.source, ('Author prose changed', cell.id)
     native_markdown = (ROOT / 'REPORT.md').read_text(encoding='utf-8')
     expected_local = '\n\n'.join(local_navigation(c.source) for c in reader.cells) + '\n'
-    assert native_markdown.replace('<br>\n', '\n') == expected_local, 'Native reader lost or changed content'
+    native_comparison = re.sub(
+        r'<p class="lab-native-navigation">(.*?)</p>',
+        lambda m: '<nav class="lab-nav" aria-label="Навигация по отчёту">'
+        + m.group(1).replace('</a> · <a', '</a><a') + '</nav>', native_markdown)
+    assert native_comparison.replace('<br>\n', '\n') == expected_local, 'Native reader lost or changed content'
     notebook_markdown = '\n'.join(c.source for c in reader.cells)
     assert not re.search(r'\]\(#|href="#', notebook_markdown), 'Fragment-only navigation breaks in GitHub notebook viewer'
     notebook_destinations = re.findall(re.escape(REPORT) + r'#([^\s)"<>]+)', notebook_markdown)
     assert len(notebook_destinations) >= 123
     page = BeautifulSoup((ROOT / 'lab01_reading.html').read_text(encoding='utf-8'), 'html.parser')
     assert not page.select('.jp-CodeCell, details.lab-code')
+    assert not any(a.get('href', '').startswith(REPORT + '#') for a in page.find_all('a'))
     assert all(page.find(id='cell-id=' + c.id) is not None for c in reader.cells)
     images = page.find_all('img')
     assert len(images) == 15
