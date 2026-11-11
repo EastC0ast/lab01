@@ -2,15 +2,29 @@
   "review_date": "2026-11-11",
   "reader_export_repeatable_byte_for_byte": true,
   "saved_plot_images_inspected": 15,
-  "browser_visual_review": {
+  "handwriting_research": {
+    "status": "new_open_data_study_completed",
+    "report": "design/handwriting/README.md",
+    "verification": "design/handwriting/verification.json",
+    "source": "UCI UJI Pen Characters (Version 2)",
+    "glyphs": 120,
+    "writers": 60,
+    "variables": [
+      "width_mm",
+      "height_mm"
+    ],
+    "historical_team_measurements_recovered": false,
+    "historical_search_evidence": "design/handwriting/history_search.json"
+  },
+  "content_changes_requiring_agreement": "design/REVIEW_NOTES.md",
+  "full_lab_completion_claimed": false,
+  "historical_browser_review": {
     "status": "not_completed",
     "reason": "Browser automation stopped because the current Windows browser URL could not be determined reliably; no further UI actions were attempted."
   },
-  "handwriting_research": {
-    "status": "source_data_not_found",
-    "evidence": "design/handwriting/history_search.json",
-    "template_is_unspecified_proposal_not_recovered_results": true
-  },
-  "content_changes_requiring_agreement": "design/REVIEW_NOTES.md",
-  "full_lab_completion_claimed": false
+  "browser_visual_review": {
+    "status": "pending_postpublication_review",
+    "target": "design/handwriting/README.md",
+    "main_report": "REPORT.md#additional-assignment"
+  }
 }

@@ -26,6 +26,15 @@ jobs:
           python-version: '3.12'
       - name: Install verified dependencies
         run: python -m pip install -r requirements-verified.txt
+      - name: Verify saved handwriting study, test and execute it again
+        env:
+          MPLBACKEND: Agg
+        run: |
+          python design/handwriting/verify_study.py
+          python -m unittest discover -s design/handwriting -p test_handwriting.py -v
+          python design/handwriting/prepare_data.py
+          python design/handwriting/build_study.py
+          python design/handwriting/verify_study.py
       - name: Rebuild reader from preserved results and execute a verification copy
         env:
           MPLBACKEND: Agg

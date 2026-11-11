@@ -1,0 +1,7 @@
+# Preserve the downloaded source files byte-for-byte on every platform.
+design/handwriting/data/uji_pen_characters_version2.zip -text
+design/handwriting/data/uji2.names -text
+design/handwriting/data/uci_metadata.json -text
+# Derived data hashes use a fixed LF representation.
+design/handwriting/data/*.csv text eol=lf
+design/handwriting/data/samples.json text eol=lf

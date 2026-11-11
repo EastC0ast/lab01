@@ -194,6 +194,11 @@ def main():
     assert all(a['href'][1:] in html_ids for a in page.select('a[href^="#"]'))
     for match in re.findall(r'\]\((https://github.com/EastC0ast/lab01/blob/design-layout/[^)]+)\)', markdown):
         assert (ROOT / match.split('/blob/design-layout/', 1)[1]).is_file(), match
+    handwriting = json.loads((ROOT / 'design/handwriting/verification.json').read_text(encoding='utf-8'))
+    assert handwriting['status'] == 'passed' and handwriting['glyphs'] == 120 and handwriting['writers'] == 60
+    summary = (ROOT / 'design/handwriting/summary.md').read_text(encoding='utf-8').strip()
+    assert summary in reader_map['reader-additional-assignment'].source
+    assert '<!-- HANDWRITING_SUMMARY -->' not in markdown
     result = {
         'baseline_commit': BASELINE, 'baseline_calculation_sha256': hashlib.sha256(baseline_bytes).hexdigest(),
         'calculation_notebook_matches_baseline': True, 'author_code_cells_unchanged': len(original_code),
@@ -209,6 +214,8 @@ def main():
         'research_authors': team['research'], 'design_authors': team['design'],
         'units_verified': False, 'content_questions': 'design/REVIEW_NOTES.md',
         'handwriting_results_recovered': False,
+        'new_handwriting_study_completed': True,
+        'handwriting_study_verification': 'design/handwriting/verification.json',
         'versions': {p: importlib.metadata.version(p) for p in
                      ['numpy', 'pandas', 'scipy', 'matplotlib', 'nbformat', 'nbclient', 'nbconvert']},
         'execution': execute_copy(full) if args.execute else {'status': 'not run'},

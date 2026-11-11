@@ -43,6 +43,8 @@
   "units_verified": false,
   "content_questions": "design/REVIEW_NOTES.md",
   "handwriting_results_recovered": false,
+  "new_handwriting_study_completed": true,
+  "handwriting_study_verification": "design/handwriting/verification.json",
   "versions": {
     "numpy": "2.5.4",
     "pandas": "2.3.3",

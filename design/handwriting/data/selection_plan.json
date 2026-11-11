@@ -1,0 +1,27 @@
+{
+  "selected_before_outcome_analysis": true,
+  "selection_date": "2026-11-11",
+  "character": "a",
+  "unicode": "U+0061, lowercase Latin letter a",
+  "choice_basis": "Selected for this study before examining measurements or correlation results; one common character, same label for all writers and repetitions.",
+  "primary_quantities": [
+    "width_mm",
+    "height_mm"
+  ],
+  "primary_units": "screen millimetres",
+  "calibration": "Divide raw max-minus-min ink-coordinate extents by the site ratio documented by dataset authors: UJI=100 ink units/mm, UPV=152 ink units/mm.",
+  "descriptive_unit": "All 120 glyphs, two per writer",
+  "dependence_analysis_unit": "The 60 writer-level paired means, averaging both repetitions separately for width and height",
+  "inclusion_rule": "All source samples with exact character label a; both repetitions of all 60 writers",
+  "exclusion_rule": "Other character labels only; no selected glyphs dropped or selected using their measured values",
+  "expected_glyphs": 120,
+  "expected_writers": 60,
+  "expected_repetitions_per_writer": 2,
+  "planned_site_sensitivity": "Report association separately for UJI and UPV as well as pooled calibrated writer means",
+  "raw_audit_fields": [
+    "width_ink",
+    "height_ink",
+    "ink_units_per_mm",
+    "raw XY strokes"
+  ]
+}

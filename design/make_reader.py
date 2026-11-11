@@ -136,7 +136,11 @@ def main():
                 cells.append(md_cell((ROOT / 'design/reader_notes.md').read_text(encoding='utf-8'),
                                      'reader-notation'))
             if cell.id == 'design-nav-5':
-                cells.append(md_cell((ROOT / 'design/additional_assignment.md').read_text(encoding='utf-8'),
+                additional = (ROOT / 'design/additional_assignment.md').read_text(encoding='utf-8')
+                summary = (ROOT / 'design/handwriting/summary.md').read_text(encoding='utf-8')
+                assert additional.count('<!-- HANDWRITING_SUMMARY -->') == 1
+                additional = additional.replace('<!-- HANDWRITING_SUMMARY -->', summary.strip())
+                cells.append(md_cell(additional,
                                      'reader-additional-assignment'))
             continue
         if cell.cell_type != 'code':
@@ -332,9 +336,10 @@ MathJax и могут требовать соединение с интерне�
 - [Интерактивный генератор в marimo](designer_generator/README.md): методы команды
   из ветки `generator` перенесены отдельно, без merge. Известное расхождение GD
   показано в интерфейсе; формула команды не исправлялась.
-- [Исследование рукописных знаков](design/handwriting/README.md): статус поиска
-  исходного материала и форма для измерений. Найденные исходные данные нельзя
-  подменять придуманными результатами.
+- [Исследование рукописных знаков](design/handwriting/README.md): 120 записей
+  латинской `a` от 60 авторов, ширина и высота в мм, EDA и проверка связи.
+  Это новое исследование открытого UCI UJI Pen Characters 2, а не восстановление
+  прежних измерений команды. [Расчёты и проверка](design/handwriting/REPRODUCIBILITY.md).
 - [Замечания к единицам и выводам](design/REVIEW_NOTES.md): вопросы для согласования
   с инфохимиками; они не исправлены автоматически.
 
