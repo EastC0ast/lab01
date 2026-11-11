@@ -42,9 +42,9 @@
     }
   },
   "sha256_lf": {
-    "README.md": "04440fb3fa684900400bdb1af86a1e05a34fba0781f6ece42971ad3f24e648be",
+    "README.md": "61f0dfe1506a09005422c26c461cd1be708290ce959a924b078d93153b50a527",
     "handwriting.ipynb": "b672ed25d45ff14fc62864a953de8334e939a98ffde2d6aee491f8278aa4fae9",
-    "handwriting_calculations.ipynb": "c068ad0e1e866b6b2777981215b75f9166c8f32885d32a8c5dd41e5e1911c54d",
+    "handwriting_calculations.ipynb": "f87e7faa045832cb4a6c39540cf5b7f0596d0d558a717c0560b501112dbe6619",
     "results.json": "9791144797f08c4687b2c72b91f46637c68ccf39bae468ae8dc3eb1d1f1ed459"
   }
 }

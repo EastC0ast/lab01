@@ -251,6 +251,10 @@ def main():
     result = run_analysis()
     blocks = sections(result)
     local_text = '\n\n'.join(source.strip() for _, source in blocks) + '\n'
+    # GitHub parses Markdown escapes before dollar-delimited display math.
+    # A math fence preserves \#, \{ and \} exactly for its renderer.
+    local_text = re.sub(r'\$\$(.*?)\$\$', lambda m: '```math\n' + m.group(1).strip() + '\n```',
+                        local_text, flags=re.S)
     (HERE / 'README.md').write_text(local_text, encoding='utf-8')
     reader_cells = []
     for key, source in blocks:
