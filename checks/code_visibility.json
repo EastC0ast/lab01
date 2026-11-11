@@ -4,8 +4,12 @@
   "calculation_notebook": "lab01_calculations.ipynb",
   "calculation_notebook_byte_identical_to_executed_input": true,
   "calculation_sha256": "9d80a29396ed85ef0d0900064a9ee3dead45ae5f2dd4dc0d51759ec9e9a9a1d3",
+  "calculation_hash_line_endings": "LF (Git canonical)",
   "calculation_code_cells": 22,
-  "markdown_cells_preserved": 65,
+  "markdown_cells_preserved": 64,
+  "presentation_only_overrides": [
+    "design-contents"
+  ],
   "figures_preserved": 15,
   "png_bytes_unchanged": true,
   "tables_preserved": 4,
@@ -111,7 +115,7 @@
       "cells": 40
     }
   ],
-  "internal_links": 120,
+  "internal_links": 123,
   "broken_links": [],
   "html_code_cells": 0,
   "reader_images_require_internet": true,

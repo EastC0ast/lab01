@@ -1,0 +1,36 @@
+{
+  "baseline_commit": "20615ee57015a07cb5134ae929b582c2dd054b88",
+  "baseline_calculation_sha256": "9d80a29396ed85ef0d0900064a9ee3dead45ae5f2dd4dc0d51759ec9e9a9a1d3",
+  "calculation_notebook_matches_baseline": true,
+  "author_code_cells_unchanged": 21,
+  "reader_code_cells": 0,
+  "html_code_cells": 0,
+  "title_immediately_followed_by_contents": true,
+  "saved_figures_byte_identical": 15,
+  "calculation_tables_identical": 4,
+  "stdout_blocks_identical": 15,
+  "html_stdout_blocks_identical": 15,
+  "html_reader_cells_present": 102,
+  "broken_internal_links": [],
+  "author_conclusions_unchanged": true,
+  "units_verified": false,
+  "content_questions": "design/REVIEW_NOTES.md",
+  "handwriting_results_recovered": false,
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2",
+    "nbformat": "5.11.1",
+    "nbclient": "0.11.0",
+    "nbconvert": "7.17.2"
+  },
+  "execution": {
+    "executed_code_cells": 22,
+    "execution_errors": 0,
+    "numeric_results_match_saved": true,
+    "float_relative_tolerance": 1e-10,
+    "float_absolute_tolerance": 1e-12,
+    "generated_figures": 15
+  }
+}

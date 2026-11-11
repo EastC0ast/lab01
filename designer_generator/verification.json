@@ -1,0 +1,76 @@
+{
+  "status": "passed",
+  "checked_at_utc": "2026-11-11T11:30:49.957309+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "marimo": "0.25.2",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2"
+  },
+  "commands": [
+    {
+      "command": "python -m unittest designer_generator.test_generator -v",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_exact_arrays_and_attempt_counts_match_original (designer_generator.test_generator.GeneratorPresentationTests.test_exact_arrays_and_attempt_counts_match_original) ... ok\ntest_invalid_parameters_are_rejected_before_generation (designer_generator.test_generator.GeneratorPresentationTests.test_invalid_parameters_are_rejected_before_generation) ... ok\ntest_reproducibility_and_global_rng_isolation (designer_generator.test_generator.GeneratorPresentationTests.test_reproducibility_and_global_rng_isolation) ... ok\ntest_source_cell_is_unchanged (designer_generator.test_generator.GeneratorPresentationTests.test_source_cell_is_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.246s\n\nOK\n"
+    },
+    {
+      "command": "python -m marimo check --strict designer_generator/app.py",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "python -m marimo export html designer_generator/app.py -o designer_generator/preview.html --no-include-code --force",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_commit": "01a1c6ce89d076e969bf0a8300fcd9abc2c96e36",
+  "sha256": {
+    "designer_generator/app.py": "a58c91478f213e73ec0fe159557d41e4f62885fbd845e8bb6af71e6ecae0de60",
+    "designer_generator/core.py": "bcb99bf1a9b2aaae4d871386bfb71c3ab025974e8497253cd8e79ed733dc21e0",
+    "designer_generator/original_generators.py": "e30ed6d5bcfef3dc8e17310d8224bcff1e28d7f21a55aa0070519d640237561e",
+    "ASE10.csv": "0e82e37f9747b7919d03b1c0c9312e926fe30b9035870790dadf2bed34d16b27",
+    "designer_generator/preview.html": "e1e7f016c2ac11db0c2b94fd0bdb91f4c03664b763e695b4c607d8424895e8f6"
+  },
+  "data_observations": 3686,
+  "fitted_parameters": {
+    "a": 202.40228003336605,
+    "loc": 27756.872789469173,
+    "scale": 6.6960783780309026
+  },
+  "known_source_GD_diagnostic": {
+    "parameters": {
+      "n": 20000,
+      "a": 3.0,
+      "loc": 0.0,
+      "scale": 1.0,
+      "seed": 40
+    },
+    "D к заданной гамма-модели": 0.1779822749227064,
+    "Асимметрия": -0.9850874467020351,
+    "Значений ниже loc": 873,
+    "interpretation": "The source algorithm is preserved; these results do not approve its distributional correctness."
+  },
+  "html_checks": {
+    "session_cells_executed": 7,
+    "output_types": [
+      "data"
+    ],
+    "rendered_elements": {
+      "marimo-number": 5,
+      "marimo-table": 2,
+      "png_figures": 1,
+      "h3": 2
+    },
+    "source_code_in_export": false,
+    "serialized_errors": 0,
+    "default_parameters_rendered": true
+  },
+  "html_export": "static initial state; live controls require marimo run",
+  "visual_review": "separate from automated checks"
+}

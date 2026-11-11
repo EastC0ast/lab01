@@ -1,0 +1,16 @@
+{
+  "review_date": "2026-11-11",
+  "reader_export_repeatable_byte_for_byte": true,
+  "saved_plot_images_inspected": 15,
+  "browser_visual_review": {
+    "status": "not_completed",
+    "reason": "Browser automation stopped because the current Windows browser URL could not be determined reliably; no further UI actions were attempted."
+  },
+  "handwriting_research": {
+    "status": "source_data_not_found",
+    "evidence": "design/handwriting/history_search.json",
+    "template_is_unspecified_proposal_not_recovered_results": true
+  },
+  "content_changes_requiring_agreement": "design/REVIEW_NOTES.md",
+  "full_lab_completion_claimed": false
+}

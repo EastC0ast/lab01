@@ -7,6 +7,7 @@ all numeric/text/table results are checked before publication.
 from __future__ import annotations
 
 import base64
+import argparse
 import copy
 import hashlib
 import html
@@ -38,9 +39,24 @@ def visible_text(markup):
     return BeautifulSoup(markup, 'html.parser').get_text()
 
 
+def reader_contents(source):
+    return source.replace(
+        'Код свёрнут; результаты расчётов оставлены видимыми.',
+        'В читательской версии код отсутствует; результаты расчётов оставлены видимыми.').replace(
+        '[Указатель рисунков и таблиц](#figure-index)',
+        '**[7. Дополнительное задание КТвД](#additional-assignment)**  \n'
+        '[Рукописные знаки](#additional-assignment) · [Генератор marimo](#additional-assignment)\n\n'
+        '[Указатель рисунков и таблиц](#figure-index)')
+
+
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--input', default='lab01.ipynb',
+                        help='Executed notebook; use lab01_calculations.ipynb for repeatable reader-only export')
+    args = parser.parse_args()
     source_path = ROOT / 'lab01.ipynb'
-    source_bytes = source_path.read_bytes()
+    input_path = (ROOT / args.input).resolve()
+    source_bytes = input_path.read_bytes()
     original = nbformat.reads(source_bytes.decode('utf-8'), as_version=4)
     code_cells = [c for c in original.cells if c.cell_type == 'code']
     if not code_cells:
@@ -49,7 +65,8 @@ def main():
         raise RuntimeError('Refusing to publish a notebook containing execution errors.')
     # This is the unmodified, full, executable notebook, not a reconstruction.
     calculation_path = ROOT / 'lab01_calculations.ipynb'
-    calculation_path.write_bytes(source_bytes)
+    if input_path != calculation_path.resolve():
+        calculation_path.write_bytes(source_bytes)
     assert calculation_path.read_bytes() == source_bytes
 
     cells = []
@@ -62,12 +79,19 @@ def main():
     for cell in original.cells:
         if cell.cell_type == 'markdown':
             cells.append(copy.deepcopy(cell))
-            if cell.id == original.cells[0].id:
+            if cell.id == 'design-contents':
+                cells[-1].source = reader_contents(cells[-1].source)
                 cells.append(md_cell(
                     '> **Режим чтения — без кода.** Текст, формулы, таблицы и графики '
                     'сохранены. Для пересчёта откройте [полный исполняемый ноутбук]('
                     + CALCULATIONS + '). Эта версия содержит только сохранённые результаты.',
                     'reader-notice'))
+            if cell.id == 'design-data':
+                cells.append(md_cell((ROOT / 'design/reader_notes.md').read_text(encoding='utf-8'),
+                                     'reader-notation'))
+            if cell.id == 'design-nav-5':
+                cells.append(md_cell((ROOT / 'design/additional_assignment.md').read_text(encoding='utf-8'),
+                                     'reader-additional-assignment'))
             continue
         if cell.cell_type != 'code':
             raise RuntimeError('Unsupported cell type: ' + cell.cell_type)
@@ -151,7 +175,9 @@ def main():
     assert all(c.cell_type == 'markdown' for c in report.cells)
     originals = {c.id: c.source for c in original.cells if c.cell_type == 'markdown'}
     preserved = {c.id: c.source for c in report.cells if c.id in originals}
-    assert preserved == originals, 'Existing report text was changed'
+    expected = dict(originals)
+    expected['design-contents'] = reader_contents(expected['design-contents'])
+    assert preserved == expected, 'Existing report text was changed beyond the reader notice'
     markdown = '\n'.join(c.source for c in report.cells)
     targets = set(re.findall(r'(?:id|name)="([^"]+)"', markdown))
     links = re.findall(r'\]\(#([^\s)]+)\)', markdown) + re.findall(r'href="#([^"]+)"', markdown)
@@ -198,9 +224,11 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
         'reader_notebook': 'lab01.ipynb', 'reader_code_cells': 0,
         'calculation_notebook': 'lab01_calculations.ipynb',
         'calculation_notebook_byte_identical_to_executed_input': True,
-        'calculation_sha256': hashlib.sha256(source_bytes).hexdigest(),
+        'calculation_sha256': hashlib.sha256(source_bytes.replace(b'\r\n', b'\n')).hexdigest(),
+        'calculation_hash_line_endings': 'LF (Git canonical)',
         'calculation_code_cells': len(code_cells),
-        'markdown_cells_preserved': len(originals), 'figures_preserved': figure,
+        'markdown_cells_preserved': len(originals) - 1,
+        'presentation_only_overrides': ['design-contents'], 'figures_preserved': figure,
         'png_bytes_unchanged': True, 'tables_preserved': tables,
         'stdout_blocks_preserved': streams, 'result_checks': result_checks,
         'internal_links': len(links), 'broken_links': missing,
@@ -214,16 +242,17 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
     print(json.dumps({k: v for k, v in checks.items() if k not in ('assets', 'result_checks')},
                      ensure_ascii=False, indent=2))
     readme = ROOT / 'DESIGN_README.md'
-    original_readme = readme.read_text(encoding='utf-8') if readme.exists() else ''
-    notice = '''# Просмотр без кода
+    notice = '''# Лабораторная № 1 · КТвД
 
 **Основной файл [lab01.ipynb](lab01.ipynb) — отчёт без единой кодовой ячейки.**
-В нём сохранены исходные тексты, формулы, таблицы и все 15 рассчитанных графиков.
+В нём сохранены исходные формулы, таблицы и все 15 рассчитанных графиков.
+Сразу после титульника расположено оглавление. Добавлены справочные обозначения
+и ссылки на дополнительное задание; содержательные выводы команды сохранены.
 Это читательская версия: её не нужно выполнять. Графики загружаются из этого
 репозитория; для их просмотра в GitHub/Colab требуется интернет.
 
 **[lab01_calculations.ipynb](lab01_calculations.ipynb) — полный исполняемый файл.**
-Он сохранён побайтно, вместе со всем кодом и результатами. Для пересчёта открывайте
+Все его расчётные ячейки и сохранённые результаты сохранены. Для пересчёта открывайте
 его, а не читательскую версию. Файл ASE10.csv должен находиться рядом.
 
 **[lab01_reading.html](lab01_reading.html)** — скачать и открыть в браузере.
@@ -231,15 +260,44 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
 MathJax и могут требовать соединение с интернетом.
 
 Проверка сохранности: [checks/code_visibility.json](checks/code_visibility.json).
-Проверки вычислений относятся к полному исполняемому файлу:
-[checks/render_verification.json](checks/render_verification.json).
+Новая независимая проверка и пересчёт:
+[checks/current_verification.json](checks/current_verification.json).
+Историческая проверка сборки: [checks/render_verification.json](checks/render_verification.json).
 
-Изменения только в ветке design-layout. Основная ветка не затрагивается.
+## Дополнительное задание
+
+- [Интерактивный генератор в marimo](designer_generator/README.md): методы команды
+  из ветки `generator` перенесены отдельно, без merge. Известное расхождение GD
+  показано в интерфейсе; формула команды не исправлялась.
+- [Исследование рукописных знаков](design/handwriting/README.md): статус поиска
+  исходного материала и форма для измерений. Найденные исходные данные нельзя
+  подменять придуманными результатами.
+- [Замечания к единицам и выводам](design/REVIEW_NOTES.md): вопросы для согласования
+  с инфохимиками; они не исправлены автоматически.
+
+## Проверка и повторный экспорт
+
+Работать из корня репозитория. Установить `requirements-verified.txt` и выполнить:
+
+```sh
+python design/make_reader.py --input lab01_calculations.ipynb
+python design/verify_report.py --execute
+python -m unittest discover -s designer_generator -p 'test_*.py'
+python -m marimo check --strict designer_generator/app.py
+```
+
+Первый шаг повторно строит читательскую версию из сохранённых результатов,
+не записывая исполняемый ноутбук. Проверка исполняет отдельную копию в памяти,
+сопоставляет численные результаты и проверяет графики, таблицы и ссылки.
+Старый `design/build_report.py` восстанавливает историческую редакцию из
+упакованного источника; для обычных правок читательской версии его запуск не нужен.
+
+Изменения публикуются только в `design-layout`. Проверки GitHub работают с правами
+чтения и не записывают результаты в ветки. `master`, `design` и исходный репозиторий
+`ffriewrya/lab01` не изменяются. Авторы и группы на титульнике ожидают заполнения командой.
 
 '''
-    if original_readme:
-        notice += '<details>\n<summary>Исходная документация исполняемой версии</summary>\n\n' + original_readme + '\n</details>\n'
-    readme.write_text(notice, encoding='utf-8')
+    readme.write_text(notice.rstrip() + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':
