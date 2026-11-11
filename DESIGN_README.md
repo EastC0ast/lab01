@@ -29,6 +29,8 @@ MathJax и могут требовать соединение с интерне�
 
 ## Дополнительное задание
 
+- **[Открыть marimo в браузере без установки программ](https://marimo.app/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm?embed=true&mode=read&include-code=false&show-code=false)**.
+  Дождаться первой загрузки, изменить поля и нажать «Сгенерировать».
 - [Интерактивный генератор в marimo](designer_generator/README.md): методы команды
   из ветки `generator` перенесены отдельно, без merge. Известное расхождение GD
   показано в интерфейсе; формула команды не исправлялась.

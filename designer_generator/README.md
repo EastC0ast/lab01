@@ -1,5 +1,13 @@
 # Генератор команды в marimo
 
+**[Открыть генератор в браузере без установки программ](https://marimo.app/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm?embed=true&mode=read&include-code=false&show-code=false).**
+
+Дождитесь первой загрузки Python и библиотек, измените поля и нажмите
+«Сгенерировать». Вход в аккаунт не нужен. Проверено в браузере изменение всех
+пяти параметров и пересчёт графика и таблиц: [результат проверки](browser_live_verification.json).
+[Описание браузерной версии](browser_README.md). Локальный запуск ниже нужен
+только при работе на своём Python; для просмотра преподавателем он не требуется.
+
 Интерактивное представление двух генераторов сигнала ASE_NO2 из `EastC0ast/lab01`,
 ветка `generator`, commit [`01a1c6ce89d076e969bf0a8300fcd9abc2c96e36`](https://github.com/EastC0ast/lab01/blob/01a1c6ce89d076e969bf0a8300fcd9abc2c96e36/lab01.ipynb).
 Рабочая ветка — `design-layout`; объединения веток не требуется.

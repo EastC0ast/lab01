@@ -1,0 +1,44 @@
+{
+  "native_execution": "passed",
+  "wasm_export": "not_requested",
+  "checked_at_utc": "2026-11-11T12:35:24.362556+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "marimo": "0.25.2",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2"
+  },
+  "commands": [
+    {
+      "command": "python -m unittest designer_generator.browser_test -v",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_embedded_csv_is_byte_identical_after_lf_normalization (designer_generator.browser_test.BrowserNotebookTests.test_embedded_csv_is_byte_identical_after_lf_normalization) ... ok\ntest_original_algorithm_cell_preserved_exactly (designer_generator.browser_test.BrowserNotebookTests.test_original_algorithm_cell_preserved_exactly) ... ok\ntest_presentation_helpers_preserved_exactly (designer_generator.browser_test.BrowserNotebookTests.test_presentation_helpers_preserved_exactly) ... ok\ntest_same_values_and_attempts_for_both_methods (designer_generator.browser_test.BrowserNotebookTests.test_same_values_and_attempts_for_both_methods) ... ok\ntest_ui_cells_and_metadata (designer_generator.browser_test.BrowserNotebookTests.test_ui_cells_and_metadata) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.267s\n\nOK\n"
+    },
+    {
+      "command": "python -m marimo check --strict designer_generator/browser_app.py",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "python -m marimo export html designer_generator/browser_app.py -o designer_generator/browser_preview.html --no-include-code --no-sandbox --force",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "session_cells_executed": 9,
+  "serialized_errors": 0,
+  "csv_newlines": "LF normalized, identical to source Git blob; numeric observations unchanged",
+  "browser_runtime_checked": false,
+  "browser_runtime_note": "This command checks native execution only; see browser_live_verification.json for the separate published-browser test.",
+  "sha256_line_endings": "LF (Git canonical)",
+  "sha256": {
+    "browser_app.py": "0632a3596cde3c206bdcd00b85cd06be226084a746dc7035e22c0eb5a0c3ead6",
+    "browser_preview.html": "8bcf51e06ed74a0220c62ac33e66bfd00f53d6a857cb50c856dcbb6c5ed68ad5",
+    "browser_test.py": "f9b8ba233c7b78fa2c8f9aa20561cb8fd41b7dbfe88c394f7eb0dcf9b314a9b2"
+  }
+}

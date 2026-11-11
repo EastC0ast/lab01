@@ -39,5 +39,6 @@ jobs:
         run: |
           python -c "from pathlib import Path; from designer_generator.verify import inspect_export; print(inspect_export(Path('designer_generator/preview.html')))"
           python -m designer_generator.verify
+          python -m designer_generator.browser_verify
       - name: Verify calculations remain untouched
         run: git diff --exit-code -- lab01_calculations.ipynb ASE10.csv design/notebook_source.json.gz.b64
