@@ -167,7 +167,7 @@ details.lab-code summary{cursor:pointer;color:#245b78;font-size:13px;padding:5px
 @media(max-width:640px){main{padding:8px}.lab-toolbar{font-size:12px}}
 '''
     soup.head.append(style)
-    for index, input_area in enumerate(list(soup.select('.jp-InputArea')), 1):
+    for index, input_area in enumerate(list(soup.select('.jp-CodeCell .jp-InputArea')), 1):
         details = soup.new_tag('details', attrs={'class': 'lab-code'})
         summary = soup.new_tag('summary')
         summary.string = 'Показать код · ячейка ' + str(index)
