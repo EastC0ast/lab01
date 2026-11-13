@@ -1,5 +1,3 @@
 # Preserve input data consistently on every platform.
 ASE10.csv text eol=lf
-ktvd/data/*.csv text eol=lf
-ktvd/data/*.json text eol=lf
-ktvd/data/*.zip -text
+figures/*.png -text
