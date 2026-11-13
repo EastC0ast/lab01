@@ -1,44 +1,33 @@
 {
   "native_execution": "passed",
-  "wasm_export": "not_requested",
-  "checked_at_utc": "2026-11-13T13:35:40.603127+00:00",
-  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
-  "packages": {
-    "marimo": "0.25.2",
-    "numpy": "2.5.4",
-    "pandas": "2.3.3",
-    "scipy": "1.18.1",
-    "matplotlib": "3.11.2"
-  },
+  "checked_at_utc": "2026-11-13T16:33:52.659978+00:00",
+  "scope": "Bundled author source equivalence and native presentation execution",
   "commands": [
     {
       "command": "python -m unittest designer_generator.browser_test -v",
-      "exit_code": 0,
-      "stdout": "",
-      "stderr": "test_browser_values_match_native_current_scientific_samplers (designer_generator.browser_test.BrowserNotebookTests.test_browser_values_match_native_current_scientific_samplers) ... ok\ntest_csv_is_exact_after_lf_normalization (designer_generator.browser_test.BrowserNotebookTests.test_csv_is_exact_after_lf_normalization) ... ok\ntest_current_algorithms_are_embedded_exactly (designer_generator.browser_test.BrowserNotebookTests.test_current_algorithms_are_embedded_exactly) ... ok\ntest_model_helpers_are_embedded_exactly (designer_generator.browser_test.BrowserNotebookTests.test_model_helpers_are_embedded_exactly) ... ok\ntest_ui_and_no_local_imports (designer_generator.browser_test.BrowserNotebookTests.test_ui_and_no_local_imports) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.160s\n\nOK\n"
+      "exit_code": 0
     },
     {
       "command": "python -m marimo check --strict designer_generator/browser_app.py",
-      "exit_code": 0,
-      "stdout": "",
-      "stderr": ""
+      "exit_code": 0
     },
     {
       "command": "python -m marimo export html designer_generator/browser_app.py -o designer_generator/browser_preview.html --no-include-code --no-sandbox --force",
-      "exit_code": 0,
-      "stdout": "",
-      "stderr": ""
+      "exit_code": 0
     }
   ],
-  "session_cells_executed": 8,
-  "serialized_errors": 0,
-  "csv_newlines": "LF normalized, identical to source Git blob; numeric observations unchanged",
+  "export": {
+    "executed_cells": 7,
+    "tables": 2,
+    "numeric_inputs": 5,
+    "plot_rendered": true,
+    "code_hidden": true,
+    "serialized_errors": 0
+  },
   "browser_runtime_checked": false,
-  "browser_runtime_note": "This command checks native execution only; see browser_live_verification.json for the separate published-browser test.",
-  "sha256_line_endings": "LF (Git canonical)",
-  "sha256": {
-    "browser_app.py": "3c0582f53cb4e9cdb35aa4660552588c704680fa1ca33dcd2f5ae38cc8f2041d",
-    "browser_preview.html": "1c43e9c7a12cf9d5204b6c469c4c0834356c45f7cc1c5943bbb668475e3b7aca",
-    "browser_test.py": "900a0e7ba7a4af623380488ad5b27012935fffbc7dba605cb135213db3a4df1d"
+  "sha256_lf": {
+    "browser_app.py": "0b7356687b9fafdb37688afb13e8608fde04b662ae26178ecfb866b63e615331",
+    "browser_preview.html": "87b6939b7dca49c4a7cae159dc7d1c4b38284d5351357b05645b6129578266f5",
+    "browser_test.py": "2d556d68dae302e7ffded8003c40cae3bcec86736e3e9afade3c4c26fccb74d2"
   }
 }

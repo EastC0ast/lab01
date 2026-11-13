@@ -1,8 +1,10 @@
 {
-  "repository": "EastC0ast/lab01",
-  "branch": "generator",
-  "commit": "01a1c6ce89d076e969bf0a8300fcd9abc2c96e36",
+  "repository": "ffriewrya/lab01",
+  "commit": "4567e0cb35967e50b6ade9f963d2171fa4d97b31",
   "path": "lab01.ipynb",
-  "cell_index": 54,
-  "source_sha256": "a05865e011e7e6aba00e64a901a8927c814d4d936c62f58a156488c1525eb7d7"
+  "scope": "Unmodified author function source; presentation adapters only",
+  "sha256_lf": {
+    "original_generators.py": "c38e6cebc58088d202508b96d9a2416561d7daa5df5b044612256f8c2ca0a9c7",
+    "original_statistics.py": "c04fb67f506aa0d218753deb6f5b4c3b423f033e7d1aa0a303c92209d20062bf"
+  }
 }

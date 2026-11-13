@@ -3,71 +3,22 @@
 # dependencies = ["marimo==0.25.2", "numpy", "pandas", "scipy", "matplotlib"]
 # ///
 import marimo
-__generated_with="0.25.2"
-app=marimo.App(width="medium",app_title="Лабораторная № 1 · Генерация сигнала NO₂")
+__generated_with = '0.25.2'
+app = marimo.App(width='medium', app_title='Генератор сигнала NO₂')
 
 @app.cell
 def _():
     import marimo as mo
-    return (mo,)
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    # Лабораторная работа № 1 · Sprint 2
-    ## Генерация сигнала датчика NO₂
-
-    [1. Модель](#method) · [2. Параметры](#parameters) · [3. Результаты](#results)
-
-    <a id="method"></a>
-
-    ### 1. Модель и методы
-
-    ASE_NO2 — усреднённый за час электрический сигнал датчика, мкВ.
-    Наблюдения имеют левую асимметрию. Используется отражённая гамма-модель:
-
-    $$
-    X=b-\theta G,\qquad G\sim\Gamma(a,1),\quad a>1,\quad\theta>0,\quad X\leq b.
-    $$
-
-    Здесь a — форма, b — верхняя граница модели в мкВ, θ — масштаб в мкВ.
-    Граница b оценивается по данным и не является паспортным пределом датчика.
-
-    $$
-    f_X(x)=\frac{1}{\theta\Gamma(a)}\left(\frac{b-x}{\theta}\right)^{a-1}
-    e^{-(b-x)/\theta},\quad x<b;\qquad f_X(x)=0,\quad x\geq b.
-    $$
-
-    $$
-    \mathrm E[X]=b-a\theta,\qquad\mathrm{Var}(X)=a\theta^2,\qquad\gamma_1=-2/\sqrt a.
-    $$
-
-    Сравниваются алгоритм А с предложением Коши и полный алгоритм GD с
-    нормальным предложением и экспоненциальной оболочкой. Оба сначала
-    генерируют G, затем применяют одно и то же отражение.
-
-    В таблице 1 приведены альтернативные модели. Скошенная нормальная имеет
-    меньший AIC; отражённая гамма выбрана как учебная аппроксимация для
-    исследования двух гамма-генераторов. Она не объявляется истинным или
-    лучшим законом сигнала. Независимые реализации воспроизводят одномерное
-    распределение, а временную зависимость наблюдений не моделируют.
-    """)
-    return
-
-
-
-@app.cell
-def _():
-    import base64,gzip,hashlib,io,math
+    import base64, gzip, hashlib, io
     from time import perf_counter
-    from types import SimpleNamespace
     import numpy as np
     import pandas as pd
     import matplotlib.pyplot as plt
     from scipy import stats
-    _algorithm_source='"""Gamma samplers from uniform/normal primitives, using independent RNG objects.\n\nA: Knuth, The Art of Computer Programming, vol. 2, section 3.4.1, algorithm A.\nGD: Ahrens & Dieter (1982), doi:10.1145/358315.358390. The polynomial\ncoefficients and all three acceptance stages are specified by that algorithm.\nThe R GammaDist reference documents an independent production implementation:\nhttps://stat.ethz.ch/R-manual/R-devel/library/stats/html/GammaDist.html\nThis module is an independently written Python implementation of the method.\n"""\n\nimport math\nimport numpy as np\n\n\ndef _polynomial_without_constant(z, coefficients):\n    result = 0.\n    for coefficient in reversed(coefficients):\n        result = z * (coefficient + result)\n    return result\n\n\ndef _positive_uniform(rng):\n    value = rng.random()\n    while value == 0:\n        value = rng.random()\n    return value\n\n\ndef gamma_a(n, a, rng):\n    """Knuth A, for a > 1: Cauchy proposal followed by rejection."""\n    if not isinstance(n, int) or n < 1 or not math.isfinite(a) or a <= 1:\n        raise ValueError(\'A requires a positive integer n and a > 1.\')\n    values = np.empty(n)\n    coefficient = math.sqrt(2*a - 1)\n    completed = proposals = uniforms = 0\n    while completed < n:\n        proposals += 1\n        uniforms += 1\n        tangent = math.tan(math.pi * rng.random())\n        candidate = a - 1 + coefficient*tangent\n        if candidate <= 0:\n            continue\n        uniforms += 1\n        log_acceptance = (math.log1p(tangent*tangent)\n                          + (a-1)*math.log(candidate/(a-1)) - coefficient*tangent)\n        if math.log(_positive_uniform(rng)) <= log_acceptance:\n            values[completed] = candidate\n            completed += 1\n    return values, {\'proposals\': proposals, \'uniforms\': uniforms, \'normals\': 0, \'hat_proposals\': 0}\n\n\ndef gamma_gd(n, a, rng):\n    """Full Ahrens--Dieter GD, a >= 1, including the exponential hat stage."""\n    if not isinstance(n, int) or n < 1 or not math.isfinite(a) or a < 1:\n        raise ValueError(\'GD requires a positive integer n and a >= 1.\')\n    s2 = a-.5\n    s = math.sqrt(s2)\n    squeeze = math.sqrt(32)-12*s\n    q0 = _polynomial_without_constant(1/a,\n          (.04166669, .02083148, .00801191, .00144121, -.00007388, .00024511, .0002424))\n    quotient_coefficients = (.3333333, -.250003, .2000062, -.1662921, .1423657, -.1367177, .1233795)\n    if a <= 3.686:\n        center, laplace_scale, envelope = .463+s+.178*s2, 1.235, .195/s-.079+.16*s\n    elif a <= 13.022:\n        center, laplace_scale, envelope = 1.654+.0076*s2, 1.68/s+.275, .062/s+.024\n    else:\n        center, laplace_scale, envelope = 1.77, .75, .1515/s\n\n    def quotient(t):\n        v = t/(2*s)\n        if abs(v) <= .25:\n            return q0 + .5*t*t*_polynomial_without_constant(v, quotient_coefficients)\n        return q0 - s*t + .25*t*t + 2*s2*math.log1p(v)\n\n    values = np.empty(n)\n    proposals = uniforms = normals = hats = 0\n    for i in range(n):\n        normals += 1\n        proposals += 1\n        t = float(rng.standard_normal())\n        root = s + .5*t\n        accepted = t >= 0\n        if not accepted:\n            uniforms += 1\n            u = rng.random()\n            accepted = squeeze*u <= t*t*t\n            if not accepted and root > 0:\n                accepted = math.log1p(-u) <= quotient(t)\n        if not accepted:\n            # Rejected normal candidates are replaced by the exponential hat,\n            # not by restarting normal sampling. This stage supplies the tail.\n            while True:\n                hats += 1\n                proposals += 1\n                uniforms += 2\n                exponential = -math.log(_positive_uniform(rng))\n                signed_uniform = 2*rng.random()-1\n                t = center + math.copysign(laplace_scale*exponential, signed_uniform)\n                if t < -.71874483771719:\n                    continue\n                q = quotient(t)\n                if q <= 0:\n                    continue\n                # log(expm1(q)) is evaluated without overflow for large q.\n                log_w = math.log(math.expm1(q)) if q < 50 else q + math.log1p(-math.exp(-q))\n                left = -math.inf if signed_uniform == 0 else math.log(envelope*abs(signed_uniform))\n                if left <= log_w + exponential - .5*t*t:\n                    root = s + .5*t\n                    break\n        values[i] = root*root\n    return values, {\'proposals\': proposals, \'uniforms\': uniforms, \'normals\': normals, \'hat_proposals\': hats}\n'
-    _wrapper_source='def _values(data):\n    x = np.asarray(data, dtype=float)\n    if x.ndim != 1 or len(x) < 3 or not np.isfinite(x).all() or np.ptp(x) == 0:\n        raise ValueError(\'At least three finite, nonconstant observations are required.\')\n    return x\n\ndef fit_parameters(data):\n    """MLE for X=b-theta*G, by fitting Gamma to -X."""\n    a, location, theta = stats.gamma.fit(-_values(data), method=\'MLE\')\n    return float(a), float(-location), float(theta)\n\ndef moment_parameters(data):\n    x = _values(data)\n    skew = float(stats.skew(x, bias=True))\n    if skew >= 0:\n        raise ValueError(\'Reflected-gamma moment estimates require negative skewness.\')\n    a = 4 / skew**2\n    theta = math.sqrt(float(x.var(ddof=0)) / a)\n    return a, float(x.mean()) + a*theta, theta\n\ndef model_cdf(x, a, b, theta):\n    return stats.gamma.sf((b-np.asarray(x))/theta, a)\n\ndef model_pdf(x, a, b, theta):\n    return stats.gamma.pdf((b-np.asarray(x))/theta, a) / theta\n\ndef model_quantile(p, a, b, theta):\n    return b-theta*stats.gamma.isf(p, a)\n\ndef theoretical(a, b, theta, n=None):\n    return {\'n\': n, \'sum\': None if n is None else n*(b-a*theta),\n            \'mean\': b-a*theta, \'median\': float(model_quantile(.5,a,b,theta)),\n            \'std\': math.sqrt(a)*theta, \'variance\': a*theta**2,\n            \'skew\': -2/math.sqrt(a), \'q05\': float(model_quantile(.05,a,b,theta)),\n            \'q95\': float(model_quantile(.95,a,b,theta)),\n            \'min\': None, \'max\': b, \'modes\': [], \'mode_frequency\': None,\n            \'density_mode\': b-theta*(a-1) if a>1 else b}\n\ndef summary(data):\n    x = _values(data)\n    unique, counts = np.unique(x, return_counts=True)\n    frequency = int(counts.max())\n    return {\'n\': len(x), \'sum\': float(x.sum()), \'mean\': float(x.mean()),\n            \'median\': float(np.median(x)), \'std\': float(x.std(ddof=1)),\n            \'variance\': float(x.var(ddof=1)), \'skew\': float(stats.skew(x,bias=False)),\n            \'min\': float(x.min()), \'max\': float(x.max()),\n            \'q05\': float(np.quantile(x,.05)), \'q95\': float(np.quantile(x,.95)),\n            \'modes\': unique[counts==frequency].tolist() if frequency>1 else [],\n            \'mode_frequency\': frequency}\n\ndef compare_models(data):\n    x = _values(data)\n    a,b,theta = fit_parameters(x)\n    ma,mb,mt = moment_parameters(x)\n    alpha,loc,scale = stats.skewnorm.fit(x)\n    ga,gl,gt = stats.gamma.fit(x)\n    mu,sd = stats.norm.fit(x)\n    specifications = [\n        (\'Отражённая гамма, MLE\',\'reflected_gamma\',\'MLE\',(a,b,theta),3,\n         lambda z:model_cdf(z,a,b,theta), lambda z:stats.gamma.logpdf(-z,a,-b,theta),\n         theoretical(a,b,theta)),\n        (\'Отражённая гамма, моменты\',\'reflected_gamma_moments\',\'moments\',(ma,mb,mt),None,\n         lambda z:model_cdf(z,ma,mb,mt),lambda z:stats.gamma.logpdf(-z,ma,-mb,mt),theoretical(ma,mb,mt)),\n        (\'Скошенная нормальная, MLE\',\'skew_normal\',\'MLE\',(alpha,loc,scale),3,\n         lambda z:stats.skewnorm.cdf(z,alpha,loc,scale),lambda z:stats.skewnorm.logpdf(z,alpha,loc,scale),\n         {\'mean\':float(stats.skewnorm.mean(alpha,loc,scale)), \'std\':float(stats.skewnorm.std(alpha,loc,scale)),\n          \'variance\':float(stats.skewnorm.var(alpha,loc,scale)), \'skew\':float(stats.skewnorm.stats(alpha,loc,scale,moments=\'s\'))}),\n        (\'Обычная гамма, MLE\',\'right_gamma\',\'MLE\',(ga,gl,gt),3,\n         lambda z:stats.gamma.cdf(z,ga,gl,gt),lambda z:stats.gamma.logpdf(z,ga,gl,gt),\n         {\'mean\':gl+ga*gt,\'std\':math.sqrt(ga)*gt,\'variance\':ga*gt**2,\'skew\':2/math.sqrt(ga)}),\n        (\'Нормальная, MLE\',\'normal\',\'MLE\',(mu,sd),2,\n         lambda z:stats.norm.cdf(z,mu,sd),lambda z:stats.norm.logpdf(z,mu,sd),\n         {\'mean\':mu,\'std\':sd,\'variance\':sd**2,\'skew\':0.})]\n    records=[]\n    for name,key,estimation,parameters,k,cdf,logpdf,moments in specifications:\n        likelihood=float(np.sum(logpdf(x)))\n        records.append({\'name\':name,\'key\':key,\'estimation\':estimation,\n                        \'parameters\':[float(p) for p in parameters],\n                        \'D_data\':float(stats.ks_1samp(x,cdf).statistic),\n                        \'log_likelihood\':likelihood,\'AIC\':None if k is None else 2*k-2*likelihood,\n                        **{key:float(value) for key,value in moments.items() if key in [\'mean\',\'std\',\'variance\',\'skew\']}})\n    return records\n\ndef generate(method,n,a,b,theta,seed):\n    if method not in (\'A\',\'GD\') or not isinstance(n,int) or not 1<=n<=20000:\n        raise ValueError(\'Choose A or GD and integer N from 1 to 20000.\')\n    if not all(np.isfinite(v) for v in (a,b,theta)) or not 1<a<=1000 or abs(b)>1e9 or not 1e-6<=theta<=1e6:\n        raise ValueError(\'Require 1<a<=1000, |b|<=1e9 and 1e-6<=theta<=1e6.\')\n    if not isinstance(seed,int) or not 0<=seed<2**32:\n        raise ValueError(\'Seed must be an integer from 0 through 2**32-1.\')\n    rng=np.random.default_rng(seed)\n    start=perf_counter()\n    gamma,counts=(algorithms.gamma_a if method==\'A\' else algorithms.gamma_gd)(n,a,rng)\n    elapsed=perf_counter()-start\n    values=b-theta*gamma\n    return {\'values\':values,\'gamma_values\':gamma,\'attempts\':counts[\'proposals\'],\n            \'acceptance\':n/counts[\'proposals\'],\'seconds\':elapsed,**counts,\n            \'support_violations\':int(np.count_nonzero(values>b))}\n\ndef diagnostics(values,a,b,theta,data=None):\n    x=np.asarray(values)\n    result={\'D к модели\':float(stats.ks_1samp(x,lambda z:model_cdf(z,a,b,theta)).statistic),\n            \'Асимметрия\':float(stats.skew(x,bias=False)),\n            \'Значений выше b\':int(np.count_nonzero(x>b))}\n    if data is not None:\n        result[\'D к данным\']=float(stats.ks_2samp(x,np.asarray(data)).statistic)\n    return result\n\ndef comparison_table(data,runs,a,b,theta):\n    observed=summary(data)\n    rows={\'Данные\':observed,\'Модель\':theoretical(a,b,theta,len(data))}\n    rows.update({method:summary(run[\'values\']) for method,run in runs.items()})\n    keys=[(\'n\',\'N\'),(\'sum\',\'Сумма, мкВ\'),(\'mean\',\'Среднее, мкВ\'),(\'median\',\'Медиана, мкВ\'),\n          (\'std\',\'Стандартное отклонение, мкВ\'),(\'variance\',\'Дисперсия, мкВ²\'),(\'skew\',\'Асимметрия\'),\n          (\'q05\',\'5-й процентиль, мкВ\'),(\'q95\',\'95-й процентиль, мкВ\'),(\'min\',\'Минимум, мкВ\'),(\'max\',\'Максимум, мкВ\'),(\'modes\',\'Эмпирические моды, мкВ\')]\n    if any(len(run[\'values\'])!=len(data) for run in runs.values()):\n        keys=[item for item in keys if item[0]!=\'sum\']\n    records=[]\n    for key,label in keys:\n        record={\'Показатель\':label}\n        for name,row in rows.items():\n            value=row.get(key)\n            if key==\'modes\':\n                value=\'Нет повторов\' if not value else \'; \'.join(f\'{v:.6g}\' for v in value)\n                if name==\'Модель\': value=\'—\'\n            elif key==\'max\' and name==\'Модель\': value=f\'Граница b = {b:.9g}\'\n            elif value is None: value=\'—\'\n            elif key==\'n\': value=str(value)\n            else: value=f\'{value:.9g}\'\n            record[name]=value\n        records.append(record)\n    return pd.DataFrame(records)\n\ndef sampling_intervals(n,a,b,theta,repetitions=600,seed=20261113):\n    """95% Monte Carlo prediction bands for sample statistics at fixed parameters.\n\n    Reference Gamma sampling is used only for calibration, not as A or GD.\n    These are not parameter CIs and not fitted-distribution goodness-of-fit tests.\n    """\n    rng=np.random.default_rng(seed)\n    samples=b-theta*rng.gamma(a,size=(repetitions,n))\n    statistics={\'mean\':samples.mean(axis=1),\'std\':samples.std(axis=1,ddof=1),\n                \'variance\':samples.var(axis=1,ddof=1),\'skew\':stats.skew(samples,axis=1,bias=False),\n                \'q05\':np.quantile(samples,.05,axis=1),\'q95\':np.quantile(samples,.95,axis=1)}\n    return {key:{\'low\':float(np.quantile(value,.025)), \'high\':float(np.quantile(value,.975))}\n            for key,value in statistics.items()}'
-    _csv_gzip_b64=(
+    _original_source = '"""Unmodified generator cell 54 from EastC0ast/lab01, generator @ 01a1c6ce89d076e969bf0a8300fcd9abc2c96e36."""\nimport numpy as np\n\ndef generate_knuth(n_samples, a_param, loc, scale):\n    generated = []\n    attempts = 0\n    while len(generated) < n_samples:\n        attempts += 1\n        u1 = np.random.rand()\n        y = np.tan(np.pi * u1)\n\n        x_cand = np.sqrt(2 * a_param - 1) * y + a_param - 1\n    \n        if x_cand <= 0:\n            continue\n            \n        v = np.random.rand()\n        condition = (1 + y**2) * np.exp((a_param - 1) * np.log(x_cand / (a_param - 1)) - np.sqrt(2 * a_param - 1) * y)\n        \n        if v <= condition:\n            x_final = loc + scale * x_cand\n            generated.append(x_final)\n            \n    return np.array(generated)[:n_samples], attempts\n    \ndef generate_gd(n_samples, a, loc, scale):\n    generated = []\n    attempts = 0\n    \n    s2 = a - 0.5\n    s = np.sqrt(s2)\n    d = 5.65685424949238 - 12 * s\n    \n    q0 = 1 / (24 * a) + 1 / (48 * a**2) + 23 / (2880 * a**3)\n    \n    while len(generated) < n_samples:\n        attempts += 1\n        t = np.random.normal()\n        x_base = s + t / 2\n        x2 = x_base * x_base\n        \n        if t >= 0:\n            x_final = loc + scale * (2 * a - x2)\n            generated.append(x_final)\n            continue\n            \n        u = np.random.rand()\n        if d * u <= t**3:\n            x_final = loc + scale * (2 * a - x2)\n            generated.append(x_final)\n            continue\n            \n        if x_base <= 0:\n            continue\n            \n        v = t / (s + s)\n        if np.abs(v) > 0.25:\n            q = q0 - s * t + (t**2) / 4 + (s2 + s2) * np.log(1 + v)\n        else:\n            q = q0 + (t**2 / 2) * (0.33333333 * v - 0.25 * v**2 + 0.2 * v**3)\n            \n        if np.log(1 - u) <= q:\n            x_final = loc + scale * (2 * a - x2)\n            generated.append(x_final)\n            \n    return np.array(generated)[:n_samples], attempts\n'
+    _statistics_source = 'import pandas as pd\n\ndef get_stat(data, column_name):\n    stats = {\n        "Сумма": data.sum(),\n        "Среднее": data.mean(),\n        "Медиана": data.median(),\n        "Минимум": data.min(),\n        "Максимум": data.max(),\n        "Стандартное отклонение": data.std(),\n        "95-й перцентиль": data.quantile(0.95),\n        "Дисперсия": data.var(),\n        "Мода": data.mode().iloc[0],\n    }\n    return pd.DataFrame(stats.values(), index=stats.keys(), columns=[column_name])\n'
+    _helper_source = "def fit_parameters(data):\n    return tuple(stats.gamma.fit(data))\n\ndef generate(method, n, a, loc, scale, seed):\n    if method not in ('A', 'GD') or not isinstance(n, int) or not 1 <= n <= 20000:\n        raise ValueError('Require A or GD and integer N from 1 through 20000.')\n    if not all(np.isfinite(x) for x in (a, loc, scale)) or not 1 < a <= 1000 or not scale > 0:\n        raise ValueError('Require finite parameters, 1<a<=1000 and scale>0.')\n    if not isinstance(seed, int) or not 0 <= seed < 2**32:\n        raise ValueError('Require an integer seed from 0 through 2**32-1.')\n    state = np.random.get_state()\n    try:\n        np.random.seed(seed)\n        started = perf_counter()\n        values, attempts = (generate_knuth if method == 'A' else generate_gd)(n, a, loc, scale)\n        seconds = perf_counter() - started\n    finally:\n        np.random.set_state(state)\n    return {'values': values, 'attempts': attempts, 'seconds': seconds}\n\ndef comparison_table(data, runs):\n    return pd.concat([\n        get_stat(data, 'Реальные данные NO2'),\n        get_stat(pd.Series(runs['A']['values']), 'Алгоритм А'),\n        get_stat(pd.Series(runs['GD']['values']), 'Алгоритм GD'),\n    ], axis=1)"
+    _csv_b64 = (
         'H4sIAAAAAAACCnT9y45wya6th/X9FHqBk4j7xdk6kAy4YRzJlt02BNsNd6SOGn588xtkxMyqOdfGRtW/qrIyYsaFMUgODv6//5f/'
         '/f/z+1//5//T//O//Y8l/q6//ff+t//x/6e//d/11//z/01/+5/+6+///P/4H6r+i/jD7//1f/ifnr8V/d1+w//lf/t//S//+//3'
         'f/tf/w8llfxfcvovJf13uf0fU/otO5f6M/tvq7PWn7ZaXb8tzZ1/Rtr257LTmj+jj9J/7SdLrz33XX97+1lrpzxS/80pjZ8ydmvt'
@@ -2522,97 +2473,108 @@ def _():
         'akzZy8f+35dgP2SQfEvGyv3t9CPjB8tomCaf6e9eVj1eW3Ylp2nng+633qIkJUpsx4IegJP3E2yRacayGvOmlsoxTL1w9cY9PIaM'
         'JB/ivq0tF1bb0p2+0y5xs7NB2YH/RfZO3bHhNkbdjar/B3C108VJSwcA'
     )
-    _expected_algorithm_sha='9da481fd4d7de746a40f50b27b7b2202a7ee16313e63b10e330e7c687c5447fe'
-    _expected_csv_sha='c51cb27ce99350c20f57d915a5ba079e82887162f1ceb5944e8bccab571cd539'
-    assert hashlib.sha256(_algorithm_source.encode()).hexdigest()==_expected_algorithm_sha
-    _csv=gzip.decompress(base64.b64decode(_csv_gzip_b64))
-    assert hashlib.sha256(_csv).hexdigest()==_expected_csv_sha
-    _alg={}
-    exec(compile(_algorithm_source,'<gamma-algorithms>','exec'),_alg)
-    _helpers={'np':np,'pd':pd,'stats':stats,'math':math,'perf_counter':perf_counter,'algorithms':SimpleNamespace(gamma_a=_alg['gamma_a'],gamma_gd=_alg['gamma_gd'])}
-    exec(compile(_wrapper_source,'<model-and-validation>','exec'),_helpers)
-    fit_parameters=_helpers['fit_parameters']
-    compare_models=_helpers['compare_models']
-    generate=_helpers['generate']
-    comparison_table=_helpers['comparison_table']
-    diagnostics=_helpers['diagnostics']
-    model_pdf=_helpers['model_pdf']
-    model_cdf=_helpers['model_cdf']
+    _csv = gzip.decompress(base64.b64decode(_csv_b64))
+    assert hashlib.sha256(_csv).hexdigest() == 'c51cb27ce99350c20f57d915a5ba079e82887162f1ceb5944e8bccab571cd539'
+    _namespace = {'np': np, 'pd': pd, 'stats': stats, 'perf_counter': perf_counter}
+    exec(compile(_original_source, '<author-generators>', 'exec'), _namespace)
+    exec(compile(_statistics_source, '<author-statistics>', 'exec'), _namespace)
+    exec(compile(_helper_source, '<presentation-adapters>', 'exec'), _namespace)
+    fit_parameters = _namespace['fit_parameters']
+    generate = _namespace['generate']
+    comparison_table = _namespace['comparison_table']
     def load_no2():
-        return pd.read_csv(io.BytesIO(_csv),sep=';')['ASE_NO2'].dropna()
-    return np,pd,plt,stats,load_no2,fit_parameters,compare_models,generate,comparison_table,diagnostics,model_pdf,model_cdf
+        return pd.read_csv(io.BytesIO(_csv), sep=';')['ASE_NO2'].dropna()
+    return mo, np, pd, plt, stats, load_no2, fit_parameters, generate, comparison_table
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Генератор сигнала NO₂
+
+    [Отчёт команды](https://github.com/EastC0ast/lab01/blob/design-layout/REPORT.md#sprint2)
+
+    Задайте параметры и нажмите «Сгенерировать».
+    """)
+    return
+
 
 @app.cell
-def _(load_no2,fit_parameters,compare_models):
-    no2=load_no2()
-    fitted=fit_parameters(no2)
-    models=compare_models(no2)
-    return no2,fitted,models
+def _(load_no2, fit_parameters):
+    no2 = load_no2()
+    fitted = fit_parameters(no2)
+    return no2, fitted
 
 
 @app.cell(hide_code=True)
-def _(fitted,no2,mo):
-    parameter_form=mo.ui.dictionary({
-        'n':mo.ui.number(start=100,stop=20000,step=1,value=len(no2),label='Число значений N'),
-        'seed':mo.ui.number(start=0,stop=4294967295,step=1,value=40,label='Начальное число (seed)'),
-        'a':mo.ui.number(start=1.000001,stop=1000,value=fitted[0],label='Форма a > 1'),
-        'b':mo.ui.number(start=-1e9,stop=1e9,value=fitted[1],label='Верхняя граница b, мкВ'),
-        'theta':mo.ui.number(start=1e-6,stop=1e6,value=fitted[2],label='Масштаб θ > 0, мкВ')
-    }).form(submit_button_label='Сгенерировать',show_clear_button=False)
-    mo.vstack([mo.md("<a id='parameters'></a>\n\n### 2. Параметры\nНачальные значения оценены методом максимального правдоподобия. Измените параметры и нажмите «Сгенерировать»."),parameter_form])
+def _(mo, fitted):
+    parameter_form = mo.ui.batch(mo.md('''### Параметры
+
+    {n}
+
+    {seed}
+
+    {a}
+
+    {loc}
+
+    {scale}
+    '''), {
+        'n': mo.ui.number(start=100, stop=20000, step=1, value=1000, label='Число значений N'),
+        'seed': mo.ui.number(start=0, stop=4294967295, step=1, value=40, label='Начальное число (seed)'),
+        'a': mo.ui.number(start=1.000001, stop=1000, value=fitted[0], label='Параметр формы a'),
+        'loc': mo.ui.number(start=-1e9, stop=1e9, value=fitted[1], label='Сдвиг loc, мкВ'),
+        'scale': mo.ui.number(start=1e-6, stop=1e6, value=fitted[2], label='Масштаб scale, мкВ'),
+    }).form(submit_button_label='Сгенерировать', show_clear_button=False)
+    parameter_form
     return (parameter_form,)
 
 
 @app.cell
-def _(parameter_form,fitted,no2,generate,mo,np):
-    settings=parameter_form.value or dict(n=len(no2),seed=40,a=fitted[0],b=fitted[1],theta=fitted[2])
-    mo.stop(any(v is None or not np.isfinite(v) for v in settings.values()),mo.md('Заполните все параметры конечными числами.'))
-    _valid=(100<=settings['n']<=20000 and int(settings['n'])==settings['n'] and
-            0<=settings['seed']<2**32 and int(settings['seed'])==settings['seed'] and
-            1<settings['a']<=1000 and abs(settings['b'])<=1e9 and 1e-6<=settings['theta']<=1e6)
-    mo.stop(not _valid,mo.md('Допустимы целые N от 100 до 20 000 и seed от 0 до 4 294 967 295; 1<a≤1000, |b|≤10⁹, 10⁻⁶≤θ≤10⁶.'))
-    runs={method:generate(method,int(settings['n']),settings['a'],settings['b'],settings['theta'],int(settings['seed'])) for method in ['A','GD']}
-    return settings,runs
+def _(parameter_form, fitted, mo, np, generate):
+    settings = parameter_form.value or dict(n=1000, seed=40, a=fitted[0], loc=fitted[1], scale=fitted[2])
+    mo.stop(any(v is None or not np.isfinite(v) for v in settings.values()), mo.md('Заполните все параметры.'))
+    _valid = (100 <= settings['n'] <= 20000 and int(settings['n']) == settings['n'] and
+              0 <= settings['seed'] < 2**32 and int(settings['seed']) == settings['seed'] and
+              1 < settings['a'] <= 1000 and abs(settings['loc']) <= 1e9 and 1e-6 <= settings['scale'] <= 1e6)
+    mo.stop(not _valid, mo.md('Проверьте значения параметров.'))
+    runs = {method: generate(method, int(settings['n']), settings['a'], settings['loc'], settings['scale'], int(settings['seed']))
+            for method in ('A', 'GD')}
+    return settings, runs
 
 
 @app.cell(hide_code=True)
-def _(no2,runs,settings,model_pdf,model_cdf,np,plt,stats,mo):
-    with plt.rc_context({'font.family':'DejaVu Sans','font.size':10,'axes.spines.top':False,'axes.spines.right':False,'axes.grid':True,'grid.alpha':.18}):
-        figure,axes=plt.subplots(1,2,figsize=(11,4.1),constrained_layout=True)
-        _all=np.r_[no2.to_numpy(),runs['A']['values'],runs['GD']['values']]
-        _grid=np.linspace(_all.min()-10,max(_all.max()+10,settings['b']+5),600)
-        for _values,_label,_color in [(no2.to_numpy(),'Данные','#64748b'),(runs['A']['values'],'Алгоритм А','#245c7a'),(runs['GD']['values'],'Алгоритм GD','#a57240')]:
-            axes[0].plot(_grid,stats.gaussian_kde(_values)(_grid),label=_label,color=_color)
-            _sorted=np.sort(_values)
-            axes[1].step(_sorted,np.arange(1,len(_sorted)+1)/len(_sorted),where='post',label=_label,color=_color)
-        _parameters=(settings['a'],settings['b'],settings['theta'])
-        axes[0].plot(_grid,model_pdf(_grid,*_parameters),'--',color='#334155',label='Модель')
-        axes[1].plot(_grid,model_cdf(_grid,*_parameters),'--',color='#334155',label='Модель')
-        axes[0].set(title='1. Оценки плотности',xlabel='Сигнал ASE_NO2, мкВ',ylabel='Плотность, 1/мкВ')
-        axes[1].set(title='2. Функции распределения',xlabel='Сигнал ASE_NO2, мкВ',ylabel='F(x)',ylim=(0,1.02))
-        for _axis in axes: _axis.legend(fontsize=8)
-    mo.vstack([mo.md("<a id='results'></a>\n\n### 3. Результаты\nРисунок 1 — данные, модель и две синтетические выборки. Кривые плотности сглажены; ступени ECDF построены по всем значениям."),figure])
+def _(no2, runs, plt, np, stats, mo):
+    with plt.rc_context({'font.family': 'DejaVu Sans', 'font.size': 10,
+                         'axes.spines.top': False, 'axes.spines.right': False,
+                         'axes.grid': True, 'grid.alpha': .18}):
+        figure, axes = plt.subplots(figsize=(10, 4.5), constrained_layout=True)
+        _all = np.r_[no2.to_numpy(), runs['A']['values'], runs['GD']['values']]
+        _grid = np.linspace(_all.min(), _all.max(), 600)
+        for _values, _label, _color in [(no2.to_numpy(), 'Реальные данные', '#64748b'),
+                                         (runs['A']['values'], 'Алгоритм А', '#245c7a'),
+                                         (runs['GD']['values'], 'Алгоритм GD', '#a57240')]:
+            axes.plot(_grid, stats.gaussian_kde(_values)(_grid), label=_label, color=_color)
+        axes.set(title='Сравнение сгенерированных данных', xlabel='Напряжение сенсора NO2 (мкВ)', ylabel='Плотность вероятности')
+        axes.legend()
+    mo.vstack([mo.md('### Результаты'), figure])
     return
 
 
 @app.cell(hide_code=True)
-def _(models,runs,no2,settings,comparison_table,diagnostics,pd,mo):
-    fit_table=pd.DataFrame([{'Модель':row['name'],'D к данным':row['D_data'],'AIC':row['AIC'],
-                             'Среднее, мкВ':row['mean'],'SD, мкВ':row['std'],'Асимметрия':row['skew']} for row in models])
-    metric_table=comparison_table(no2,runs,settings['a'],settings['b'],settings['theta'])
-    performance=pd.DataFrame([{'Метод':name,'N':len(run['values']),'Кандидатов':run['proposals'],'Доля принятых, %':100*run['acceptance'],
-                               'Кандидатов оболочки GD':run['hat_proposals'],'Время, с':run['seconds'],
-                               **diagnostics(run['values'],settings['a'],settings['b'],settings['theta'],no2)} for name,run in runs.items()])
-    mo.vstack([mo.md('**Таблица 1 — модели данных.** Меньшие D и AIC означают лучшее описательное согласие. D рассчитано после оценивания параметров и не является p-value. AIC указан для MLE; оценки методом моментов показаны отдельно.'),
-               mo.ui.table(fit_table,selection=None,show_data_types=False),
-               mo.md('**Таблица 2 — характеристики.** Дисперсия и SD выборок используют делитель n−1. В модели приведены теоретические моменты. Все моды повторяющихся значений перечислены; при уникальных значениях единственная эмпирическая мода отсутствует. Суммы приведены только при одинаковом N.'),
-               mo.ui.table(metric_table,selection=None,page_size=15,show_data_types=False),
-               mo.md('**Таблица 3 — работа алгоритмов.** D к модели характеризует генерацию заданного закона, D к данным — близость синтетической и наблюдаемой выборок. Время одного запуска зависит от компьютера; эффективность не доказывает качество модели.'),
-               mo.ui.table(performance,selection=None,show_data_types=False),
-               mo.md(f"Применено: N={int(settings['n'])}, seed={int(settings['seed'])}, a={settings['a']:.6g}, b={settings['b']:.6g} мкВ, θ={settings['theta']:.6g} мкВ. Одинаковые параметры и seed повторяют выборку.")])
+def _(no2, runs, settings, comparison_table, pd, mo):
+    metric_table = comparison_table(no2, runs)
+    performance = pd.DataFrame([{
+        'Метод': method, 'N': len(run['values']), 'Попыток': run['attempts'],
+        'Эффективность, %': 100 * len(run['values']) / run['attempts'], 'Время, с': run['seconds'],
+    } for method, run in runs.items()])
+    mo.vstack([
+        mo.ui.table(metric_table.reset_index(names='Показатель'), selection=None, show_data_types=False),
+        mo.ui.table(performance, selection=None, show_data_types=False),
+        mo.md(f"Применено: N={int(settings['n'])}, seed={int(settings['seed'])}, a={settings['a']:.6g}, loc={settings['loc']:.6g}, scale={settings['scale']:.6g}."),
+    ])
     return
 
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     app.run()

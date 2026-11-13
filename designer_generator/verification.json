@@ -1,65 +1,35 @@
 {
   "status": "passed",
-  "checked_at_utc": "2026-11-13T13:34:44.322800+00:00",
-  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
-  "packages": {
-    "marimo": "0.25.2",
-    "numpy": "2.5.4",
-    "pandas": "2.3.3",
-    "scipy": "1.18.1",
-    "matplotlib": "3.11.2"
-  },
+  "checked_at_utc": "2026-11-13T16:33:45.544550+00:00",
+  "scope": "Author function preservation, native execution and presentation export; no statistical-law correctness claim",
+  "author_source_commit": "4567e0cb35967e50b6ade9f963d2171fa4d97b31",
   "commands": [
     {
       "command": "python -m unittest designer_generator.test_generator -v",
-      "exit_code": 0,
-      "stdout": "",
-      "stderr": "test_gamma_law_support_moments_and_cdf (designer_generator.test_generator.GeneratorScientificTests.test_gamma_law_support_moments_and_cdf) ... ok\ntest_gd_includes_hat_stage_and_exponential_shape_one (designer_generator.test_generator.GeneratorScientificTests.test_gd_includes_hat_stage_and_exponential_shape_one) ... ok\ntest_historical_source_is_unchanged (designer_generator.test_generator.GeneratorScientificTests.test_historical_source_is_unchanged) ... ok\ntest_invalid_parameters_fail_before_generation (designer_generator.test_generator.GeneratorScientificTests.test_invalid_parameters_fail_before_generation) ... ok\ntest_real_fit_retains_negative_skew_and_honest_model_comparison (designer_generator.test_generator.GeneratorScientificTests.test_real_fit_retains_negative_skew_and_honest_model_comparison) ... ok\ntest_reflection_support_cdf_quantile_and_moments (designer_generator.test_generator.GeneratorScientificTests.test_reflection_support_cdf_quantile_and_moments) ... ok\ntest_reproducibility_and_global_rng_isolation (designer_generator.test_generator.GeneratorScientificTests.test_reproducibility_and_global_rng_isolation) ... ok\ntest_sum_comparison_is_removed_for_different_sizes (designer_generator.test_generator.GeneratorScientificTests.test_sum_comparison_is_removed_for_different_sizes) ... ok\ntest_unique_observations_have_no_unique_empirical_mode (designer_generator.test_generator.GeneratorScientificTests.test_unique_observations_have_no_unique_empirical_mode) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 2.779s\n\nOK\n"
+      "exit_code": 0
     },
     {
       "command": "python -m marimo check --strict designer_generator/app.py",
-      "exit_code": 0,
-      "stdout": "",
-      "stderr": ""
+      "exit_code": 0
     },
     {
-      "command": "python -m marimo export html designer_generator/app.py -o designer_generator/preview.html --no-include-code --force",
-      "exit_code": 0,
-      "stdout": "",
-      "stderr": ""
+      "command": "python -m marimo export html designer_generator/app.py -o designer_generator/preview.html --no-include-code --no-sandbox --force",
+      "exit_code": 0
     }
   ],
-  "source_commit": "01a1c6ce89d076e969bf0a8300fcd9abc2c96e36",
-  "sha256": {
-    "designer_generator/app.py": "536241ad6e3cee5889063c077d1ad4ed941db1a44d125d0e8da33903dad90db8",
-    "designer_generator/core.py": "e999c3560703c931349aab6924fa03f9661a41e1d985451e26f8b78167d7daad",
-    "designer_generator/original_generators.py": "e30ed6d5bcfef3dc8e17310d8224bcff1e28d7f21a55aa0070519d640237561e",
-    "designer_generator/algorithms.py": "9da481fd4d7de746a40f50b27b7b2202a7ee16313e63b10e330e7c687c5447fe",
-    "ASE10.csv": "0e82e37f9747b7919d03b1c0c9312e926fe30b9035870790dadf2bed34d16b27",
-    "designer_generator/preview.html": "5168e5a8d73aa5c0aa2c9c6bd9b6e45a38b3a7ac7099b86afcffc2d015e657c5"
+  "export": {
+    "executed_cells": 7,
+    "tables": 2,
+    "numeric_inputs": 5,
+    "plot_rendered": true,
+    "code_hidden": true,
+    "serialized_errors": 0
   },
-  "data_observations": 3686,
-  "fitted_parameters": {
-    "a": 5.452534958703689,
-    "b": 29322.206090339172,
-    "theta": 38.582131451809865
-  },
-  "law_validation": "support, 6SE moment checks, DKW CDF bounds, reflection and reproducibility",
-  "html_checks": {
-    "session_cells_executed": 7,
-    "output_types": [
-      "data"
-    ],
-    "rendered_elements": {
-      "marimo-number": 5,
-      "marimo-table": 3,
-      "png_figures": 1,
-      "h3": 2
-    },
-    "source_code_in_export": false,
-    "serialized_errors": 0,
-    "default_parameters_rendered": true
-  },
-  "html_export": "static initial state; live controls require marimo run",
-  "visual_review": "separate from automated checks"
+  "sha256_lf": {
+    "app.py": "4d22e628557754c9e3a7e7587c0a129167738514ac2af4ca1872f9bd9eac61f6",
+    "core.py": "05d55d50f259fdd35a621422192937f7ed435ca259aefba716618c9004bd2db8",
+    "original_generators.py": "c38e6cebc58088d202508b96d9a2416561d7daa5df5b044612256f8c2ca0a9c7",
+    "original_statistics.py": "c04fb67f506aa0d218753deb6f5b4c3b423f033e7d1aa0a303c92209d20062bf",
+    "preview.html": "c36e5faf8d6bbbf85f588fa8255af37228c15ffa25fe0f7e61d45c55345ef1ad"
+  }
 }

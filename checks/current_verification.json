@@ -1,68 +1,29 @@
 {
-  "baseline_commit": "ffeba64ab3fea83f163979760deb0b39ba77c419",
-  "baseline_calculation_sha256": "9d80a29396ed85ef0d0900064a9ee3dead45ae5f2dd4dc0d51759ec9e9a9a1d3",
-  "scientific_revision_authorized_on": "2026-11-13",
-  "raw_dataset_unchanged_from_baseline": true,
-  "composed_sprint_code_and_outputs_identical": true,
-  "executed_code_cells_in_saved_notebook": 37,
+  "status": "passed",
+  "scope": "author preservation and presentation",
+  "author_repository": "ffriewrya/lab01",
+  "author_commit": "4567e0cb35967e50b6ade9f963d2171fa4d97b31",
+  "author_git_blob": "b9b3ec7a2d44aeb6238b75d06ae851afbfea423d",
+  "author_snapshot_sha256_lf": "18a2bf558f8dcb961a919bf4a2bbfa6c6a7f1b1c709a59daa53a3a593ab7ce96",
+  "author_cells_preserved_exactly": 60,
+  "author_markdown_cells_preserved_exactly": 36,
+  "author_code_cells_preserved_exactly": 24,
+  "author_cell_metadata_and_execution_counts_preserved": true,
+  "author_formulas_and_conclusions_unchanged": true,
+  "added_executable_cells": 0,
   "reader_code_cells": 0,
   "html_code_cells": 0,
-  "title_immediately_followed_by_contents": true,
-  "saved_figures_byte_identical": 19,
-  "calculation_tables_identical": 16,
-  "stdout_blocks_identical": 14,
-  "html_stdout_blocks_identical": 14,
-  "html_reader_cells_present": 140,
+  "saved_pngs_byte_identical": 16,
+  "saved_data_tables_identical": 5,
+  "saved_stdout_blocks_identical": 17,
   "broken_internal_links": [],
-  "github_reader": "REPORT.md",
-  "native_reader_matches_notebook_content": true,
-  "notebook_links_to_native_reader": 135,
-  "fragment_only_links_in_notebook": 0,
-  "html_navigation_stays_local": true,
-  "scientific_revision_manifest": "design/research_revision_manifest.json",
-  "reader_title_matches_supplied_team": true,
-  "research_authors": [
-    {
-      "variable": 1,
-      "column": "ASE_NO2",
-      "author": "Булавкин Никита"
-    },
-    {
-      "variable": 2,
-      "column": "ASE_T",
-      "author": "Коненкова Элла"
-    },
-    {
-      "variable": 3,
-      "column": "ASE_CO",
-      "author": "Пашкова Ксения"
-    }
-  ],
-  "design_authors": [
-    "Янковская Катерина",
-    "Шерстнев Игорь"
-  ],
-  "units_verified": true,
-  "dataset_provenance": "design/data_sources/provenance.json",
-  "submission_info_complete": false,
-  "handwriting_results_recovered": false,
-  "new_handwriting_study_completed": true,
-  "handwriting_study_verification": "design/handwriting/verification.json",
-  "versions": {
-    "numpy": "2.5.4",
-    "pandas": "2.3.3",
-    "scipy": "1.18.1",
-    "matplotlib": "3.11.2",
-    "nbformat": "5.11.1",
-    "nbclient": "0.11.0",
-    "nbconvert": "7.17.2"
-  },
+  "standalone_handwriting_study_included_in_main_report": false,
+  "calculation_sha256_lf": "2f2ae60f67d42221da54976eba76f85beeb3a04ac5692109c045e7dbe74a0ead",
   "execution": {
-    "executed_code_cells": 37,
+    "status": "passed",
+    "code_cells_executed": 24,
     "execution_errors": 0,
-    "numeric_results_match_saved": true,
-    "float_relative_tolerance": 1e-10,
-    "float_absolute_tolerance": 1e-12,
-    "generated_figures": 19
+    "saved_results_overwritten": false,
+    "stochastic_values_and_timings_compared_to_saved": false
   }
 }

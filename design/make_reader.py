@@ -1,6 +1,6 @@
 """Publish a code-free notebook while preserving a byte-identical calculation copy.
 
-Run after build_complete_report.py. No analysis is rerun or changed here: the reader is
+Run after build_author_report.py. No analysis is rerun or changed here: the reader is
 constructed solely from saved Markdown and saved cell outputs. PNG bytes and
 all numeric/text/table results are checked before publication.
 """
@@ -64,21 +64,7 @@ def reader_title():
 
 
 def reader_contents(source):
-    source = source.replace('Сигнал сенсора температуры (ASE_T)', 'Температура внутри узла (ASE_T)')
-    source = source.replace('Зависимость NO2 от температуры', 'Совместная связь трёх каналов')
-    if '**[7. Генератор случайных чисел — спринт 2]' in source:
-        return source
-    return source.replace(
-        '\n\nКод свёрнут; результаты расчётов оставлены видимыми. '
-        'Навигационные ссылки размещены в начале и конце крупных разделов.',
-        '').replace(
-        '[Указатель рисунков и таблиц](#figure-index)',
-        '**[7. Генератор случайных чисел — спринт 2](#sprint2)**<br/>\n'
-        '[Описание](#generator-description) · [Математическая база](#generator-math) · '
-        '[Реализация](#generator-code) · [Проверки](#generator-tests) · [Выводы](#generator-resume)\n\n'
-        '**[8. Дополнительное задание КТвД](#additional-assignment)**<br/>\n'
-        '[Рукописные знаки](#additional-assignment) · [Генератор marimo](#additional-assignment)\n\n'
-        '[Указатель рисунков и таблиц](#figure-index)')
+    return source
 
 
 def notebook_navigation(source):
@@ -103,7 +89,7 @@ def native_markdown_source(cell):
     if source.startswith('<div class="lab-result"') or source.startswith('<div style="white-space:pre-wrap">'):
         # GitHub strips CSS, including white-space:pre-wrap. Explicit line breaks
         # preserve printed results without presenting them as executable code.
-        source = source.replace('\n', '<br>\n')
+        source = source.replace('<br>\n', '\n').replace('\n', '<br>\n')
     return source
 
 
@@ -118,7 +104,7 @@ def main():
     original = nbformat.reads(source_bytes.decode('utf-8'), as_version=4)
     code_cells = [c for c in original.cells if c.cell_type == 'code']
     if not code_cells:
-        raise RuntimeError('Run build_complete_report.py first; input must be the executed notebook.')
+        raise RuntimeError('Run build_author_report.py first; input must be the executed notebook.')
     if any(o.output_type == 'error' for c in code_cells for o in c.get('outputs', [])):
         raise RuntimeError('Refusing to publish a notebook containing execution errors.')
     # This is the unmodified, full, executable notebook, not a reconstruction.
@@ -141,9 +127,6 @@ def main():
                 cells[-1].source = reader_title()
             if cell.id == 'design-contents':
                 cells[-1].source = reader_contents(cells[-1].source)
-            if cell.id == 'design-data':
-                cells.append(md_cell((ROOT / 'design/reader_notes.md').read_text(encoding='utf-8'),
-                                     'reader-notation'))
             continue
         if cell.cell_type != 'code':
             raise RuntimeError('Unsupported cell type: ' + cell.cell_type)
@@ -158,7 +141,7 @@ def main():
                     raise RuntimeError('Review stderr before publication: ' + text[:300])
                 markup = ('<div class="lab-result" style="white-space:pre-wrap;'
                           'font-family:inherit;line-height:1.6">'
-                          + html.escape(text) + '</div>')
+                          + html.escape(text).replace('\n', '<br>\n') + '</div>')
                 assert visible_text(markup) == text
                 cells.append(md_cell(markup, output_id))
                 streams += 1
@@ -211,7 +194,7 @@ def main():
                 text = string(data['text/plain'])
                 if text.startswith(('<IPython.core.display.', '<Figure size')):
                     continue
-                markup = '<div style="white-space:pre-wrap">' + html.escape(text) + '</div>'
+                markup = '<div style="white-space:pre-wrap">' + html.escape(text).replace('\n', '<br>\n') + '</div>'
                 assert visible_text(markup) == text
                 cells.append(md_cell(markup, output_id))
                 result_checks.append({'cell': cell.id, 'kind': 'text', 'text_unchanged': True})
@@ -308,7 +291,6 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
 
 [Спринт 1 — три случайные величины](REPORT.md#sprint1)<br/>
 [Спринт 2 — генератор](REPORT.md#sprint2)<br/>
-[Исследование рукописных знаков](design/handwriting/README.md)
 
 ## Генератор случайных чисел
 

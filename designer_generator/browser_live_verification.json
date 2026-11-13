@@ -1,24 +1,7 @@
 {
-  "status": "passed",
-  "checked_date": "2026-11-13",
-  "url": "https://marimo.app/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm?embed=true&mode=read&include-code=false&show-code=false",
-  "source_commit": "2580b009d8391a8fc30778c18b5da8ce5f138142",
-  "source_sha256_lf": "3c0582f53cb4e9cdb35aa4660552588c704680fa1ca33dcd2f5ae38cc8f2041d",
+  "status": "pending_for_restored_author_app",
+  "author_source_commit": "4567e0cb35967e50b6ade9f963d2171fa4d97b31",
   "source_path": "designer_generator/browser_app.py",
-  "no_account_or_local_install_required": true,
-  "code_editor_hidden": true,
-  "numeric_inputs_rendered": 5,
-  "tables_rendered": 3,
-  "initial_state": {"n": 3686, "seed": 40},
-  "initial_result_means_displayed": {"A": 29112.8125, "GD": 29113.3763},
-  "submitted_state": {"n": 1200, "seed": 41, "a": 6, "b": 29350, "theta": 40},
-  "submitted_result_caption": "Применено: N=1200, seed=41, a=6, b=29350 мкВ, θ=40 мкВ. Одинаковые параметры и seed повторяют выборку.",
-  "submitted_result_means_displayed": {"model": 29110, "A": 29112.4394, "GD": 29112.5356},
-  "submitted_samples_n": {"A": 1200, "GD": 1200},
-  "sum_row_omitted_for_different_n": true,
-  "no_samples_above_b": true,
-  "all_five_inputs_changed_and_submitted": true,
-  "live_outputs_recomputed": true,
-  "initial_dependency_load_rpc_timeout_recovered": true,
-  "first_load_note": "Wait for the browser to load Python and scientific libraries; this is slower than subsequent parameter changes."
+  "source_sha256_lf": "0b7356687b9fafdb37688afb13e8608fde04b662ae26178ecfb866b63e615331",
+  "scope": "A browser runtime test of the restored author app is required after publication. The previous reflected-model test is historical and does not apply."
 }

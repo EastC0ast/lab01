@@ -30,29 +30,23 @@ jobs:
         run: |
           python design/verify_report.py
           python design/handwriting/verify_study.py
-          python designer_generator/verify_sprint2.py
-      - name: Check statistical definitions and handwriting data
+      - name: Check the separate handwriting data
         env:
           MPLBACKEND: Agg
         run: |
-          python -m unittest design.research_tests -v
           python -m unittest discover -s design/handwriting -p test_handwriting.py -v
-      - name: Execute both sprints and rebuild the complete report
+      - name: Build the presentation without changing author cells
         env:
           MPLBACKEND: Agg
         run: |
-          python design/research_revision.py --execute
-          python designer_generator/build_sprint2.py
-          python design/build_complete_report.py
+          python design/build_author_report.py
           python design/make_reader.py --input lab01_calculations.ipynb
           python design/verify_report.py --execute
-          python designer_generator/verify_sprint2.py --execute
       - name: Check source generator equivalence and marimo application
         env:
           MPLBACKEND: Agg
         run: |
-          python -c "from pathlib import Path; from designer_generator.verify import inspect_export; print(inspect_export(Path('designer_generator/preview.html')))"
           python -m designer_generator.verify
           python -m designer_generator.browser_verify
       - name: Verify raw data and historical source remain untouched
-        run: git diff --exit-code -- ASE10.csv design/notebook_source.json.gz.b64 designer_generator/original_generators.py
+        run: git diff --exit-code -- ASE10.csv design/author_source.ipynb designer_generator/original_generators.py
