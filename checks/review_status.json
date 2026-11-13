@@ -1,7 +1,7 @@
 {
   "review_date": "2026-11-13",
-  "reader_export_repeatable_byte_for_byte": true,
-  "saved_plot_images_inspected": 15,
+  "historical_reader_export_repeatable_byte_for_byte": true,
+  "historical_saved_plot_images_inspected": 15,
   "complete_report_verification": "checks/current_verification.json",
   "sprint1_verification": "design/research_revision_manifest.json",
   "sprint2_verification": "designer_generator/sprint2_verification.json",
@@ -29,13 +29,25 @@
     "three_researcher_team_exception": "not_confirmed",
     "form_submitted": false
   },
-  "current_public_browser_review": {"status": "pending_after_publication"},
+  "current_public_browser_review": {
+    "status": "passed",
+    "reviewed_commit": "2580b009d8391a8fc30778c18b5da8ce5f138142",
+    "report_title_and_all_five_isu_numbers": true,
+    "main_report_images_loaded": 19,
+    "main_report_formula_rendering_errors": 0,
+    "notebook_temperature_link_opened_correct_report_section": true,
+    "notebook_temperature_destination": "https://github.com/EastC0ast/lab01/blob/design-layout/REPORT.md#rv-temp",
+    "sprint2_navigation_and_formulas": true,
+    "marimo_live_verification": "designer_generator/browser_live_verification.json",
+    "github_checks_run": "https://github.com/EastC0ast/lab01/actions/runs/43435633835",
+    "github_checks_conclusion": "success"
+  },
   "full_lab_completion_claimed": false,
   "historical_browser_review": {
     "status": "not_completed",
     "reason": "Browser automation stopped because the current Windows browser URL could not be determined reliably; no further UI actions were attempted."
   },
-  "browser_visual_review": {
+  "historical_handwriting_browser_visual_review": {
     "status": "passed",
     "evidence": "checks/handwriting_browser_review.json",
     "screenshot": "checks/handwriting_browser_main.jpg",
