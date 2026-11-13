@@ -1,7 +1,0 @@
-{
-  "status": "pending_for_restored_author_app",
-  "author_source_commit": "4567e0cb35967e50b6ade9f963d2171fa4d97b31",
-  "source_path": "designer_generator/browser_app.py",
-  "source_sha256_lf": "0b7356687b9fafdb37688afb13e8608fde04b662ae26178ecfb866b63e615331",
-  "scope": "A browser runtime test of the restored author app is required after publication. The previous reflected-model test is historical and does not apply."
-}

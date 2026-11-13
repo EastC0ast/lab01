@@ -123,7 +123,6 @@
     }
   },
   "official_api_metadata": {
-    "path": "uci_metadata.json",
     "url": "https://archive.ics.uci.edu/api/dataset?id=177",
     "sha256": "ce66cfa1a6b6b9012d6d5b74e7e0be8ef4bff3af433ca8d1e19a7f1d9672b690"
   }
