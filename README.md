@@ -784,7 +784,7 @@ p-value: 4.037314305072088e-224
 
 ## 7. Генератор случайных чисел
 
-[Интерактивный генератор marimo](https://molab.marimo.io/github/EastC0ast/lab01/blob/design-layout/designer_generator/browser_app.py/wasm)
+[Интерактивный генератор marimo](https://eastc0ast.github.io/lab01/)
 
 <a id="generator-description" name="generator-description" class="lab-anchor"></a>
 
