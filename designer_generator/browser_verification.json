@@ -1,7 +1,7 @@
 {
   "native_execution": "passed",
   "wasm_export": "not_requested",
-  "checked_at_utc": "2026-11-11T13:40:06.982045+00:00",
+  "checked_at_utc": "2026-11-13T13:35:40.603127+00:00",
   "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
   "packages": {
     "marimo": "0.25.2",
@@ -15,7 +15,7 @@
       "command": "python -m unittest designer_generator.browser_test -v",
       "exit_code": 0,
       "stdout": "",
-      "stderr": "test_embedded_csv_is_byte_identical_after_lf_normalization (designer_generator.browser_test.BrowserNotebookTests.test_embedded_csv_is_byte_identical_after_lf_normalization) ... ok\ntest_original_algorithm_cell_preserved_exactly (designer_generator.browser_test.BrowserNotebookTests.test_original_algorithm_cell_preserved_exactly) ... ok\ntest_presentation_helpers_preserved_exactly (designer_generator.browser_test.BrowserNotebookTests.test_presentation_helpers_preserved_exactly) ... ok\ntest_same_values_and_attempts_for_both_methods (designer_generator.browser_test.BrowserNotebookTests.test_same_values_and_attempts_for_both_methods) ... ok\ntest_ui_cells_and_metadata (designer_generator.browser_test.BrowserNotebookTests.test_ui_cells_and_metadata) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.276s\n\nOK\n"
+      "stderr": "test_browser_values_match_native_current_scientific_samplers (designer_generator.browser_test.BrowserNotebookTests.test_browser_values_match_native_current_scientific_samplers) ... ok\ntest_csv_is_exact_after_lf_normalization (designer_generator.browser_test.BrowserNotebookTests.test_csv_is_exact_after_lf_normalization) ... ok\ntest_current_algorithms_are_embedded_exactly (designer_generator.browser_test.BrowserNotebookTests.test_current_algorithms_are_embedded_exactly) ... ok\ntest_model_helpers_are_embedded_exactly (designer_generator.browser_test.BrowserNotebookTests.test_model_helpers_are_embedded_exactly) ... ok\ntest_ui_and_no_local_imports (designer_generator.browser_test.BrowserNotebookTests.test_ui_and_no_local_imports) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.160s\n\nOK\n"
     },
     {
       "command": "python -m marimo check --strict designer_generator/browser_app.py",
@@ -30,15 +30,15 @@
       "stderr": ""
     }
   ],
-  "session_cells_executed": 9,
+  "session_cells_executed": 8,
   "serialized_errors": 0,
   "csv_newlines": "LF normalized, identical to source Git blob; numeric observations unchanged",
   "browser_runtime_checked": false,
   "browser_runtime_note": "This command checks native execution only; see browser_live_verification.json for the separate published-browser test.",
   "sha256_line_endings": "LF (Git canonical)",
   "sha256": {
-    "browser_app.py": "2271ec8e957c82477324f3e91f02a86fdffea368c6aafab910c010f2ccb0f48b",
-    "browser_preview.html": "325586fe428b1c9dbb3ff85a240ebdaf50b34c824e47493e09cc668613f0c2d8",
-    "browser_test.py": "f9b8ba233c7b78fa2c8f9aa20561cb8fd41b7dbfe88c394f7eb0dcf9b314a9b2"
+    "browser_app.py": "3c0582f53cb4e9cdb35aa4660552588c704680fa1ca33dcd2f5ae38cc8f2041d",
+    "browser_preview.html": "1c43e9c7a12cf9d5204b6c469c4c0834356c45f7cc1c5943bbb668475e3b7aca",
+    "browser_test.py": "900a0e7ba7a4af623380488ad5b27012935fffbc7dba605cb135213db3a4df1d"
   }
 }

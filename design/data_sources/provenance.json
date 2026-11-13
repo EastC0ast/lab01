@@ -1,0 +1,43 @@
+{
+  "dataset": "Air quality low-cost sensors and monitoring stations NO2 raw dataset in Rouen (France)",
+  "repository_url": "https://data.mendeley.com/datasets/82dnstrd93/2",
+  "dataset_doi": "10.17632/82dnstrd93.2",
+  "version": 2,
+  "authors": [
+    "Michel Bobbia",
+    "Emma Thulliez"
+  ],
+  "license": "CC BY 4.0",
+  "paper_doi": "10.1016/j.dib.2023.109398",
+  "paper_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10371778/",
+  "verified_date": "2026-11-13",
+  "local_file": "ASE10.csv",
+  "local_sha256_lf": "c51cb27ce99350c20f57d915a5ba079e82887162f1ceb5944e8bccab571cd539",
+  "matching_evidence": [
+    "Exact filename ASE10.csv listed by the dataset",
+    "Matching 14-column schema",
+    "Matching campaign 2021-10-20 to 2022-03-25",
+    "Matching two station labels QDP and SUD3"
+  ],
+  "source_file_download_url": "https://data.mendeley.com/public-files/datasets/82dnstrd93/files/d5f31449-1857-4133-91dd-c6dabb73e2af/file_downloaded",
+  "byte_identical_to_download_verified": false,
+  "download_note": "Source metadata and public file listing verified. Direct source download returned HTTP403; no byte identity claim is made. Working CSV is preserved from repository history.",
+  "units": {
+    "ASE_NO2": "microvolt (uncalibrated electrochemical signal)",
+    "ASE_CO": "microvolt (uncalibrated electrochemical signal)",
+    "ASE_T": "degree Celsius (temperature inside the node)",
+    "date": "UTC timestamp, hourly average"
+  },
+  "experiment": "One AirSensEUR node, sensor ID10; moved between QDP and SUD3 sites during the campaign. Location labels refer to the current site.",
+  "local_rows": 3739,
+  "valid_counts": {
+    "ASE_NO2": 3686,
+    "ASE_T": 3736,
+    "ASE_CO": 3686
+  },
+  "joint_complete_rows": 3636,
+  "utc_date_range": [
+    "2021-10-20 14:00",
+    "2022-03-25 08:00"
+  ]
+}

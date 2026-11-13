@@ -1,23 +1,25 @@
 {
-  "baseline_commit": "20615ee57015a07cb5134ae929b582c2dd054b88",
+  "baseline_commit": "ffeba64ab3fea83f163979760deb0b39ba77c419",
   "baseline_calculation_sha256": "9d80a29396ed85ef0d0900064a9ee3dead45ae5f2dd4dc0d51759ec9e9a9a1d3",
-  "calculation_notebook_matches_baseline": true,
-  "author_code_cells_unchanged": 21,
+  "scientific_revision_authorized_on": "2026-11-13",
+  "raw_dataset_unchanged_from_baseline": true,
+  "composed_sprint_code_and_outputs_identical": true,
+  "executed_code_cells_in_saved_notebook": 37,
   "reader_code_cells": 0,
   "html_code_cells": 0,
   "title_immediately_followed_by_contents": true,
-  "saved_figures_byte_identical": 15,
-  "calculation_tables_identical": 4,
-  "stdout_blocks_identical": 15,
-  "html_stdout_blocks_identical": 15,
-  "html_reader_cells_present": 101,
+  "saved_figures_byte_identical": 19,
+  "calculation_tables_identical": 16,
+  "stdout_blocks_identical": 14,
+  "html_stdout_blocks_identical": 14,
+  "html_reader_cells_present": 140,
   "broken_internal_links": [],
   "github_reader": "REPORT.md",
   "native_reader_matches_notebook_content": true,
-  "notebook_links_to_native_reader": 123,
+  "notebook_links_to_native_reader": 135,
   "fragment_only_links_in_notebook": 0,
   "html_navigation_stays_local": true,
-  "author_conclusions_unchanged": true,
+  "scientific_revision_manifest": "design/research_revision_manifest.json",
   "reader_title_matches_supplied_team": true,
   "research_authors": [
     {
@@ -40,8 +42,9 @@
     "Янковская Катерина",
     "Шерстнев Игорь"
   ],
-  "units_verified": false,
-  "content_questions": "design/REVIEW_NOTES.md",
+  "units_verified": true,
+  "dataset_provenance": "design/data_sources/provenance.json",
+  "submission_info_complete": false,
   "handwriting_results_recovered": false,
   "new_handwriting_study_completed": true,
   "handwriting_study_verification": "design/handwriting/verification.json",
@@ -55,11 +58,11 @@
     "nbconvert": "7.17.2"
   },
   "execution": {
-    "executed_code_cells": 22,
+    "executed_code_cells": 37,
     "execution_errors": 0,
     "numeric_results_match_saved": true,
     "float_relative_tolerance": 1e-10,
     "float_absolute_tolerance": 1e-12,
-    "generated_figures": 15
+    "generated_figures": 19
   }
 }

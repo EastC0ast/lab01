@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "N": 3686,
+  "executed_code_cells": 13,
+  "reader_code_cells": 0,
+  "errors": 0,
+  "png_outputs": 3,
+  "html_embedded_pngs": 3,
+  "scientific_law_checks": 8,
+  "sha256_lf": {
+    "README.md": "9c028fc591f72bf949597311e0ff36b2420233b14c34caa3268836a2c9f2e6d0",
+    "sprint2.ipynb": "c130460ccaa7c2103a51388f833949028d1f83b1951c57329ae60ede76350827",
+    "sprint2_calculations.ipynb": "5cea3e765e82e46a118d4374d7cafe863517f3df9c56e522b112872479ab0079",
+    "sprint2_reading.html": "25ea21d6122452f50d7609348bc7dd900d086f85552f71612b3311b3bca64e1f",
+    "results.json": "bd9908e76163cadff8dd95c6f58d3acfc585c144fe3976cfc07e8bcdf787930d",
+    "algorithms.py": "9da481fd4d7de746a40f50b27b7b2202a7ee16313e63b10e330e7c687c5447fe",
+    "core.py": "e999c3560703c931349aab6924fa03f9661a41e1d985451e26f8b78167d7daad",
+    "generated.csv": "7a4271d466c731d5ee55b59e2447197c4667828721c29280a0efa6d46ba77d2f"
+  },
+  "historical_source_sha256": "a05865e011e7e6aba00e64a901a8927c814d4d936c62f58a156488c1525eb7d7"
+}

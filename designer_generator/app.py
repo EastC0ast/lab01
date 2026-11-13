@@ -8,134 +8,131 @@ app = marimo.App(width="medium", app_title="Лабораторная № 1 · Г
 def _():
     import sys
     from pathlib import Path
-
-    # The app also works when marimo is launched outside the repository directory.
-    _root = Path(__file__).resolve().parents[1]
-    if str(_root) not in sys.path:
-        sys.path.insert(0, str(_root))
+    _root=Path(__file__).resolve().parents[1]
+    if str(_root) not in sys.path: sys.path.insert(0,str(_root))
     import marimo as mo
     import numpy as np
     import pandas as pd
     import matplotlib.pyplot as plt
     from scipy import stats
-    from designer_generator.core import load_no2, fit_parameters, generate, summary, diagnostics, SOURCE_COMMIT
-    return SOURCE_COMMIT, diagnostics, fit_parameters, generate, load_no2, mo, np, pd, plt, stats, summary
+    from designer_generator.core import load_no2,fit_parameters,compare_models,generate,comparison_table,diagnostics,model_pdf,model_cdf
+    return mo,np,pd,plt,stats,load_no2,fit_parameters,compare_models,generate,comparison_table,diagnostics,model_pdf,model_cdf
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Лабораторная работа № 1
+    # Лабораторная работа № 1 · Sprint 2
     ## Генерация сигнала датчика NO₂
 
-    **Прикладная статистика · КТвД**
-
-    [1. Метод](#method) · [2. Параметры](#parameters) · [3. Результаты](#results)
+    [1. Модель](#method) · [2. Параметры](#parameters) · [3. Результаты](#results)
 
     <a id="method"></a>
-    ### 1. Модель и методы генерации
 
-    Для моделирования сигнала **ASE_NO2** используется гамма-распределение.
-    Его параметры оцениваются по наблюдениям датчика. Сравниваются
-    **алгоритм А** и **алгоритм GD**.
+    ### 1. Модель и методы
 
-    Для параметров $a>1$, $\theta>0$ и $x>\ell$ заданная модель имеет плотность
-    $$f(x)=\frac{1}{\Gamma(a)\theta}
-    \left(\frac{x-\ell}{\theta}\right)^{a-1}
-    \exp\!\left(-\frac{x-\ell}{\theta}\right).$$
-    Здесь $a$ — форма, $\ell$ — сдвиг, $\theta$ — масштаб.
-    Гамма-модель рассматривается как приближение: одна асимметрия данных
-    не определяет вид распределения.
+    ASE_NO2 — усреднённый за час электрический сигнал датчика, мкВ.
+    Наблюдения имеют левую асимметрию. Используется отражённая гамма-модель:
 
-    **Особенность GD.** В реализации используется преобразование
-    $\ell+\theta(2a-x^2)$, а в описании метода — $\ell+\theta x^2$.
-    Это меняет распределение и может давать значения ниже $\ell$.
-    Расхождение с гамма-моделью оценивается по графикам и показателям в таблице 2.
+    $$
+    X=b-\theta G,\qquad G\sim\Gamma(a,1),\quad a>1,\quad\theta>0,\quad X\leq b.
+    $$
 
-    Единица измерения ASE_NO2 не уточнена; сигнал приведён в единицах исходных данных.
+    Здесь a — форма, b — верхняя граница модели в мкВ, θ — масштаб в мкВ.
+    Граница b оценивается по данным и не является паспортным пределом датчика.
+
+    $$
+    f_X(x)=\frac{1}{\theta\Gamma(a)}\left(\frac{b-x}{\theta}\right)^{a-1}
+    e^{-(b-x)/\theta},\quad x<b;\qquad f_X(x)=0,\quad x\geq b.
+    $$
+
+    $$
+    \mathrm E[X]=b-a\theta,\qquad\mathrm{Var}(X)=a\theta^2,\qquad\gamma_1=-2/\sqrt a.
+    $$
+
+    Сравниваются алгоритм А с предложением Коши и полный алгоритм GD с
+    нормальным предложением и экспоненциальной оболочкой. Оба сначала
+    генерируют G, затем применяют одно и то же отражение.
+
+    В таблице 1 приведены альтернативные модели. Скошенная нормальная имеет
+    меньший AIC; отражённая гамма выбрана как учебная аппроксимация для
+    исследования двух гамма-генераторов. Она не объявляется истинным или
+    лучшим законом сигнала. Независимые реализации воспроизводят одномерное
+    распределение, а временную зависимость наблюдений не моделируют.
     """)
     return
 
 
 @app.cell
-def _(fit_parameters, load_no2):
-    no2 = load_no2()
-    fitted = fit_parameters(no2)
-    return fitted, no2
+def _(load_no2,fit_parameters,compare_models):
+    no2=load_no2()
+    fitted=fit_parameters(no2)
+    models=compare_models(no2)
+    return no2,fitted,models
 
 
 @app.cell(hide_code=True)
-def _(fitted, mo):
-    n_control = mo.ui.number(start=100, stop=20000, step=100, value=1000, label="Число значений N")
-    seed_control = mo.ui.number(start=0, stop=4294967295, step=1, value=40, label="Начальное число (seed)")
-    shape_control = mo.ui.number(start=1.000001, stop=1000, value=fitted[0], label="Форма a (> 1, до 1000)")
-    loc_control = mo.ui.number(start=-1e9, stop=1e9, value=fitted[1], label="Сдвиг ℓ (loc)")
-    scale_control = mo.ui.number(start=.000001, stop=1e6, value=fitted[2], label="Масштаб θ (scale > 0)")
-    parameter_form = mo.ui.dictionary({"n": n_control, "seed": seed_control, "a": shape_control,
-                                       "loc": loc_control, "scale": scale_control}).form(
-                                           submit_button_label="Сгенерировать", show_clear_button=False)
-    mo.vstack([mo.md("<a id='parameters'></a>\n\n### 2. Параметры\nНачальные параметры оценены по данным датчика. Измените значения и нажмите «Сгенерировать»."),
-               parameter_form])
+def _(fitted,no2,mo):
+    parameter_form=mo.ui.dictionary({
+        'n':mo.ui.number(start=100,stop=20000,step=1,value=len(no2),label='Число значений N'),
+        'seed':mo.ui.number(start=0,stop=4294967295,step=1,value=40,label='Начальное число (seed)'),
+        'a':mo.ui.number(start=1.000001,stop=1000,value=fitted[0],label='Форма a > 1'),
+        'b':mo.ui.number(start=-1e9,stop=1e9,value=fitted[1],label='Верхняя граница b, мкВ'),
+        'theta':mo.ui.number(start=1e-6,stop=1e6,value=fitted[2],label='Масштаб θ > 0, мкВ')
+    }).form(submit_button_label='Сгенерировать',show_clear_button=False)
+    mo.vstack([mo.md("<a id='parameters'></a>\n\n### 2. Параметры\nНачальные значения оценены методом максимального правдоподобия. Измените параметры и нажмите «Сгенерировать»."),parameter_form])
     return (parameter_form,)
 
 
 @app.cell
-def _(fitted, generate, mo, np, parameter_form):
-    settings = parameter_form.value or {"n": 1000, "seed": 40, "a": fitted[0], "loc": fitted[1], "scale": fitted[2]}
-    mo.stop(any(_value is None or not np.isfinite(_value) for _value in settings.values()),
-            mo.md("Заполните все параметры конечными числовыми значениями и нажмите «Сгенерировать»."))
-    _valid = (100 <= settings["n"] <= 20000 and int(settings["n"]) == settings["n"]
-              and 0 <= settings["seed"] < 2**32 and int(settings["seed"]) == settings["seed"]
-              and 1 < settings["a"] <= 1000 and abs(settings["loc"]) <= 1e9
-              and 1e-6 <= settings["scale"] <= 1e6)
-    mo.stop(not _valid, mo.md("Допустимы целые N от 100 до 20 000 и seed от 0 до 4 294 967 295; 1 < a ≤ 1000, |loc| ≤ 10⁹, 10⁻⁶ ≤ scale ≤ 10⁶."))
-    generated_a = generate("A", int(settings["n"]), settings["a"], settings["loc"], settings["scale"], int(settings["seed"]))
-    generated_gd = generate("GD", int(settings["n"]), settings["a"], settings["loc"], settings["scale"], int(settings["seed"]))
-    return generated_a, generated_gd, settings
+def _(parameter_form,fitted,no2,generate,mo,np):
+    settings=parameter_form.value or dict(n=len(no2),seed=40,a=fitted[0],b=fitted[1],theta=fitted[2])
+    mo.stop(any(v is None or not np.isfinite(v) for v in settings.values()),mo.md('Заполните все параметры конечными числами.'))
+    _valid=(100<=settings['n']<=20000 and int(settings['n'])==settings['n'] and
+            0<=settings['seed']<2**32 and int(settings['seed'])==settings['seed'] and
+            1<settings['a']<=1000 and abs(settings['b'])<=1e9 and 1e-6<=settings['theta']<=1e6)
+    mo.stop(not _valid,mo.md('Допустимы целые N от 100 до 20 000 и seed от 0 до 4 294 967 295; 1<a≤1000, |b|≤10⁹, 10⁻⁶≤θ≤10⁶.'))
+    runs={method:generate(method,int(settings['n']),settings['a'],settings['b'],settings['theta'],int(settings['seed'])) for method in ['A','GD']}
+    return settings,runs
 
 
 @app.cell(hide_code=True)
-def _(generated_a, generated_gd, mo, no2, np, plt, settings, stats):
-    with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 10, "axes.spines.top": False,
-                         "axes.spines.right": False, "axes.grid": True, "grid.alpha": .18,
-                         "axes.labelcolor": "#263238", "text.color": "#263238"}):
-        figure, axes = plt.subplots(1, 2, figsize=(11, 4.1), constrained_layout=True)
-        _series = [(no2.to_numpy(), "Исходные данные", "#64748b"),
-                   (generated_a["values"], "Алгоритм А", "#245c7a"),
-                   (generated_gd["values"], "Алгоритм GD", "#a57240")]
-        _all = np.concatenate([_entry[0] for _entry in _series])
-        _grid = np.linspace(_all.min(), _all.max(), 500)
-        for _values, _label, _color in _series:
-            axes[0].plot(_grid, stats.gaussian_kde(_values)(_grid), color=_color, label=_label, linewidth=1.6)
-            _ordered = np.sort(_values)
-            axes[1].step(_ordered, np.arange(1, len(_ordered) + 1) / len(_ordered), where="post", color=_color, label=_label)
-        axes[0].plot(_grid, stats.gamma.pdf(_grid, settings["a"], settings["loc"], settings["scale"]),
-                     color="#334155", linestyle="--", linewidth=1.3, label="Заданная гамма-модель")
-        axes[0].set(title="1. Оценки плотности", xlabel="Сигнал ASE_NO2 (ед. исходных данных)", ylabel="Плотность (1 / ед. сигнала)")
-        axes[1].set(title="2. Эмпирические функции распределения", xlabel="Сигнал ASE_NO2 (ед. исходных данных)", ylabel="Fₙ(x)", ylim=(0, 1.02))
-        axes[0].legend(fontsize=8)
-        axes[1].legend(fontsize=8)
-    mo.vstack([mo.md("<a id='results'></a>\n\n### 3. Результаты\nРисунок 1 — сопоставление данных и генераторов. Плотности сглажены, функция распределения построена по всем наблюдениям."), figure])
+def _(no2,runs,settings,model_pdf,model_cdf,np,plt,stats,mo):
+    with plt.rc_context({'font.family':'DejaVu Sans','font.size':10,'axes.spines.top':False,'axes.spines.right':False,'axes.grid':True,'grid.alpha':.18}):
+        figure,axes=plt.subplots(1,2,figsize=(11,4.1),constrained_layout=True)
+        _all=np.r_[no2.to_numpy(),runs['A']['values'],runs['GD']['values']]
+        _grid=np.linspace(_all.min()-10,max(_all.max()+10,settings['b']+5),600)
+        for _values,_label,_color in [(no2.to_numpy(),'Данные','#64748b'),(runs['A']['values'],'Алгоритм А','#245c7a'),(runs['GD']['values'],'Алгоритм GD','#a57240')]:
+            axes[0].plot(_grid,stats.gaussian_kde(_values)(_grid),label=_label,color=_color)
+            _sorted=np.sort(_values)
+            axes[1].step(_sorted,np.arange(1,len(_sorted)+1)/len(_sorted),where='post',label=_label,color=_color)
+        _parameters=(settings['a'],settings['b'],settings['theta'])
+        axes[0].plot(_grid,model_pdf(_grid,*_parameters),'--',color='#334155',label='Модель')
+        axes[1].plot(_grid,model_cdf(_grid,*_parameters),'--',color='#334155',label='Модель')
+        axes[0].set(title='1. Оценки плотности',xlabel='Сигнал ASE_NO2, мкВ',ylabel='Плотность, 1/мкВ')
+        axes[1].set(title='2. Функции распределения',xlabel='Сигнал ASE_NO2, мкВ',ylabel='F(x)',ylim=(0,1.02))
+        for _axis in axes: _axis.legend(fontsize=8)
+    mo.vstack([mo.md("<a id='results'></a>\n\n### 3. Результаты\nРисунок 1 — данные, модель и две синтетические выборки. Кривые плотности сглажены; ступени ECDF построены по всем значениям."),figure])
     return
 
 
 @app.cell(hide_code=True)
-def _(diagnostics, generated_a, generated_gd, mo, no2, pd, settings, summary):
-    summary_table = pd.DataFrame({"Исходные данные": summary(no2), "Алгоритм А": summary(generated_a["values"]),
-                                 "Алгоритм GD": summary(generated_gd["values"])}).rename_axis("Показатель").reset_index()
-    performance_table = pd.DataFrame([
-        {"Метод": _name, "N": len(_result["values"]), "Попыток": _result["attempts"],
-         "Доля принятых, %": 100 * _result["acceptance"], "Время одного запуска, с": _result["seconds"],
-         **diagnostics(_result["values"], settings["a"], settings["loc"], settings["scale"])}
-        for _name, _result in [("А", generated_a), ("GD", generated_gd)]
-    ])
-    mo.vstack([mo.md("**Таблица 1 — описательные характеристики.** Выборочные дисперсия и стандартное отклонение рассчитаны с делителем n−1. Дисперсия имеет квадрат единицы сигнала; остальные показатели — единицу сигнала."),
-               mo.ui.table(summary_table, selection=None, page_size=12, show_data_types=False),
-               mo.md("**Таблица 2 — работа генераторов и диагностика.** D — максимальное расстояние между эмпирической функцией распределения и гамма-моделью; это описательная мера расхождения. Асимметрия и доля принятых безразмерны. Время одного запуска зависит от условий выполнения."),
-               mo.ui.table(performance_table, selection=None, show_data_types=False),
-               mo.md(f"Применено: N={int(settings['n'])}, seed={int(settings['seed'])}, a={settings['a']:.6g}, loc={settings['loc']:.6g}, scale={settings['scale']:.6g}. Чтобы повторить выборку, используйте тот же seed.")])
+def _(models,runs,no2,settings,comparison_table,diagnostics,pd,mo):
+    fit_table=pd.DataFrame([{'Модель':row['name'],'D к данным':row['D_data'],'AIC':row['AIC'],
+                             'Среднее, мкВ':row['mean'],'SD, мкВ':row['std'],'Асимметрия':row['skew']} for row in models])
+    metric_table=comparison_table(no2,runs,settings['a'],settings['b'],settings['theta'])
+    performance=pd.DataFrame([{'Метод':name,'N':len(run['values']),'Кандидатов':run['proposals'],'Доля принятых, %':100*run['acceptance'],
+                               'Кандидатов оболочки GD':run['hat_proposals'],'Время, с':run['seconds'],
+                               **diagnostics(run['values'],settings['a'],settings['b'],settings['theta'],no2)} for name,run in runs.items()])
+    mo.vstack([mo.md('**Таблица 1 — модели данных.** Меньшие D и AIC означают лучшее описательное согласие. D рассчитано после оценивания параметров и не является p-value. AIC указан для MLE; оценки методом моментов показаны отдельно.'),
+               mo.ui.table(fit_table,selection=None,show_data_types=False),
+               mo.md('**Таблица 2 — характеристики.** Дисперсия и SD выборок используют делитель n−1. В модели приведены теоретические моменты. Все моды повторяющихся значений перечислены; при уникальных значениях единственная эмпирическая мода отсутствует. Суммы приведены только при одинаковом N.'),
+               mo.ui.table(metric_table,selection=None,page_size=15,show_data_types=False),
+               mo.md('**Таблица 3 — работа алгоритмов.** D к модели характеризует генерацию заданного закона, D к данным — близость синтетической и наблюдаемой выборок. Время одного запуска зависит от компьютера; эффективность не доказывает качество модели.'),
+               mo.ui.table(performance,selection=None,show_data_types=False),
+               mo.md(f"Применено: N={int(settings['n'])}, seed={int(settings['seed'])}, a={settings['a']:.6g}, b={settings['b']:.6g} мкВ, θ={settings['theta']:.6g} мкВ. Одинаковые параметры и seed повторяют выборку.")])
     return
 
 
-if __name__ == "__main__":
+if __name__=='__main__':
     app.run()

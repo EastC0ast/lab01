@@ -13,7 +13,7 @@ _design_display(_design_HTML("<style>" + _DESIGN_CSS + "</style>"))
 _design_palette = ["#245B78", "#B87532", "#697A8C", "#477D73"]
 _design_mpl.rcParams.update({
     "font.family": "DejaVu Sans", "font.size": 10.5,
-    "axes.titlesize": 13, "axes.titleweight": "semibold",
+    "axes.titlesize": 13, "axes.titleweight": "bold",
     "axes.labelsize": 10.5, "axes.labelcolor": "#243447",
     "text.color": "#243447", "xtick.color": "#5C6E7E", "ytick.color": "#5C6E7E",
     "axes.edgecolor": "#C7D3DD", "axes.linewidth": 0.8,

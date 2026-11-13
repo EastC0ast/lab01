@@ -2,6 +2,8 @@
 
 [Отчёт](REPORT.md) · [Расчёты](lab01_calculations.ipynb) · [Скачать HTML](https://github.com/EastC0ast/lab01/raw/refs/heads/design-layout/lab01_reading.html)
 
+[Спринт 1 — три случайные величины](REPORT.md#sprint1)<br/>
+[Спринт 2 — генератор](REPORT.md#sprint2)<br/>
 [Исследование рукописных знаков](design/handwriting/README.md)
 
 ## Генератор случайных чисел

@@ -46,13 +46,13 @@ def main():
     payload = preview.split('"__MARIMO_MOUNT_CONFIG__"', 1)[1].split("value: Object.freeze(", 1)[1]
     mount, _ = json.JSONDecoder().raw_decode(payload)
     cells = mount["session"]["cells"]
-    assert len(cells) == 9 and all(not c["console"] for c in cells)
+    assert len(cells) == 8 and all(not c["console"] for c in cells)
     outputs = [o for c in cells for o in c["outputs"]]
     assert all(o["type"] == "data" for o in outputs)
     assert "MarimoExceptionRaisedError" not in preview and "Traceback (most recent call last)" not in preview
     rendered = "\n".join(o["data"].get("text/html", "") for o in outputs)
-    assert "Применено: N=1000, seed=40" in rendered and "data:image/png;base64," in rendered
-    assert rendered.count("<marimo-table ") == 2 and rendered.count("marimo-number ") == 5
+    assert "Применено: N=3686, seed=40" in rendered and "data:image/png;base64," in rendered
+    assert rendered.count("<marimo-table ") == 3 and rendered.count("marimo-number ") == 5
     assert all(not c["code"] for c in mount["notebook"]["cells"])
 
     files = ["browser_app.py", "browser_preview.html", "browser_test.py"]

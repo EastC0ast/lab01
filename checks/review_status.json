@@ -1,7 +1,11 @@
 {
-  "review_date": "2026-11-11",
+  "review_date": "2026-11-13",
   "reader_export_repeatable_byte_for_byte": true,
   "saved_plot_images_inspected": 15,
+  "complete_report_verification": "checks/current_verification.json",
+  "sprint1_verification": "design/research_revision_manifest.json",
+  "sprint2_verification": "designer_generator/sprint2_verification.json",
+  "unit_tests_passed": {"research": 9, "generator_and_browser_build": 14, "handwriting": 25},
   "handwriting_research": {
     "status": "new_open_data_study_completed",
     "report": "design/handwriting/README.md",
@@ -16,7 +20,16 @@
     "historical_team_measurements_recovered": false,
     "historical_search_evidence": "design/handwriting/history_search.json"
   },
-  "content_changes_requiring_agreement": "design/REVIEW_NOTES.md",
+  "scientific_revision_authorized_on": "2026-11-13",
+  "interpretation_scope": "design/REVIEW_NOTES.md",
+  "submission": {
+    "all_five_isu_numbers_received": true,
+    "team_number": "pending_user_reply_later",
+    "sprint2_official_category_ids_and_weights": "not_supplied_in_available_requirements",
+    "three_researcher_team_exception": "not_confirmed",
+    "form_submitted": false
+  },
+  "current_public_browser_review": {"status": "pending_after_publication"},
   "full_lab_completion_claimed": false,
   "historical_browser_review": {
     "status": "not_completed",

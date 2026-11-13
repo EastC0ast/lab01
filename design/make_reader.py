@@ -1,6 +1,6 @@
 """Publish a code-free notebook while preserving a byte-identical calculation copy.
 
-Run after build_report.py. No analysis is rerun or changed here: the reader is
+Run after build_complete_report.py. No analysis is rerun or changed here: the reader is
 constructed solely from saved Markdown and saved cell outputs. PNG bytes and
 all numeric/text/table results are checked before publication.
 """
@@ -43,15 +43,19 @@ def visible_text(markup):
 def reader_title():
     """Plain reader title with the authors supplied by the team."""
     team = json.loads((ROOT / 'design/team.json').read_text(encoding='utf-8'))
+    def member(name):
+        isu = team.get('isu', {}).get(name)
+        return name + (f' — ИСУ {isu}' if isu else '')
     researchers = '\n'.join(
-        f'Случайная величина {item["variable"]} (`{item["column"]}`) — {item["author"]}.  '
+        f'Случайная величина {item["variable"]} (`{item["column"]}`) — {member(item["author"])}.<br/>'
         for item in team['research'])
-    designers = '; '.join(team['design'])
+    designers = '; '.join(member(name) for name in team['design'])
+    team_line = f'Команда № {team["team_number"]}.\n\n' if team.get('team_number') else ''
     return (
         '<a id="top" name="top" class="lab-anchor"></a>\n\n'
         '# Лабораторная работа № 1\n\n'
-        'Прикладная статистика. Первый спринт.\n\n'
-        'Исследование трёх случайных величин\n\n'
+        'Прикладная статистика. Итоговый отчёт.\n\n'
+        + team_line + 'Исследование трёх случайных величин\n\n'
         '**Авторы исследования**\n\n'
         + researchers + '\n\n'
         '**КТвД: оформление и дополнительное дизайнерское задание**\n\n'
@@ -60,12 +64,19 @@ def reader_title():
 
 
 def reader_contents(source):
+    source = source.replace('Сигнал сенсора температуры (ASE_T)', 'Температура внутри узла (ASE_T)')
+    source = source.replace('Зависимость NO2 от температуры', 'Совместная связь трёх каналов')
+    if '**[7. Генератор случайных чисел — спринт 2]' in source:
+        return source
     return source.replace(
         '\n\nКод свёрнут; результаты расчётов оставлены видимыми. '
         'Навигационные ссылки размещены в начале и конце крупных разделов.',
         '').replace(
         '[Указатель рисунков и таблиц](#figure-index)',
-        '**[7. Дополнительное задание КТвД](#additional-assignment)**  \n'
+        '**[7. Генератор случайных чисел — спринт 2](#sprint2)**<br/>\n'
+        '[Описание](#generator-description) · [Математическая база](#generator-math) · '
+        '[Реализация](#generator-code) · [Проверки](#generator-tests) · [Выводы](#generator-resume)\n\n'
+        '**[8. Дополнительное задание КТвД](#additional-assignment)**<br/>\n'
         '[Рукописные знаки](#additional-assignment) · [Генератор marimo](#additional-assignment)\n\n'
         '[Указатель рисунков и таблиц](#figure-index)')
 
@@ -84,6 +95,8 @@ def notebook_navigation(source):
 
 def native_markdown_source(cell):
     source = cell.source
+    source = re.sub(r'\$\$(.*?)\$\$', lambda m: '```math\n' + m.group(1).strip() + '\n```',
+                    source, flags=re.S)
     if source.startswith('<nav class="lab-nav"'):
         source = re.sub(r'^<nav[^>]*>', '<p class="lab-native-navigation">', source)
         source = source.replace('</nav>', '</p>').replace('</a><a', '</a> · <a')
@@ -96,7 +109,7 @@ def native_markdown_source(cell):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', default='lab01.ipynb',
+    parser.add_argument('--input', default='lab01_calculations.ipynb',
                         help='Executed notebook; use lab01_calculations.ipynb for repeatable reader-only export')
     args = parser.parse_args()
     source_path = ROOT / 'lab01.ipynb'
@@ -105,7 +118,7 @@ def main():
     original = nbformat.reads(source_bytes.decode('utf-8'), as_version=4)
     code_cells = [c for c in original.cells if c.cell_type == 'code']
     if not code_cells:
-        raise RuntimeError('Run build_report.py first; input must be the executed notebook.')
+        raise RuntimeError('Run build_complete_report.py first; input must be the executed notebook.')
     if any(o.output_type == 'error' for c in code_cells for o in c.get('outputs', [])):
         raise RuntimeError('Refusing to publish a notebook containing execution errors.')
     # This is the unmodified, full, executable notebook, not a reconstruction.
@@ -131,13 +144,6 @@ def main():
             if cell.id == 'design-data':
                 cells.append(md_cell((ROOT / 'design/reader_notes.md').read_text(encoding='utf-8'),
                                      'reader-notation'))
-            if cell.id == 'design-nav-5':
-                additional = (ROOT / 'design/additional_assignment.md').read_text(encoding='utf-8')
-                summary = (ROOT / 'design/handwriting/summary.md').read_text(encoding='utf-8')
-                assert additional.count('<!-- HANDWRITING_SUMMARY -->') == 1
-                additional = additional.replace('<!-- HANDWRITING_SUMMARY -->', summary.strip())
-                cells.append(md_cell(additional,
-                                     'reader-additional-assignment'))
             continue
         if cell.cell_type != 'code':
             raise RuntimeError('Unsupported cell type: ' + cell.cell_type)
@@ -300,6 +306,8 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
 
 [Отчёт](REPORT.md) · [Расчёты](lab01_calculations.ipynb) · [Скачать HTML](https://github.com/EastC0ast/lab01/raw/refs/heads/design-layout/lab01_reading.html)
 
+[Спринт 1 — три случайные величины](REPORT.md#sprint1)<br/>
+[Спринт 2 — генератор](REPORT.md#sprint2)<br/>
 [Исследование рукописных знаков](design/handwriting/README.md)
 
 ## Генератор случайных чисел
@@ -310,6 +318,7 @@ main{max-width:1060px;margin:0 auto;padding:16px 24px}
 Таблицы и графики обновятся после нажатия кнопки.
 '''
     readme.write_text(notice.rstrip() + '\n', encoding='utf-8')
+    (ROOT / 'README.md').write_text(notice.rstrip() + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':

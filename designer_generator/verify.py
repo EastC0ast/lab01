@@ -51,8 +51,8 @@ def inspect_export(path):
 
     tags = Tags()
     tags.feed(rendered)
-    assert tags.counts == {"marimo-number": 5, "marimo-table": 2, "png_figures": 1, "h3": 2}, tags.counts
-    assert "Применено: N=1000, seed=40" in rendered
+    assert tags.counts == {"marimo-number": 5, "marimo-table": 3, "png_figures": 1, "h3": 2}, tags.counts
+    assert "Применено: N=3686, seed=40" in rendered
     assert "data:image/png;base64," in rendered
     return {"session_cells_executed": len(cells), "output_types": sorted({o["type"] for o in outputs}),
             "rendered_elements": tags.counts, "source_code_in_export": False,
@@ -86,16 +86,13 @@ def main():
     fitted = fit_parameters(data)
     html_checks = inspect_export(ROOT / "designer_generator/preview.html")
     paths = ["designer_generator/app.py", "designer_generator/core.py",
-             "designer_generator/original_generators.py", "ASE10.csv", "designer_generator/preview.html"]
+             "designer_generator/original_generators.py", "designer_generator/algorithms.py", "ASE10.csv", "designer_generator/preview.html"]
     check = {"status": "passed", "checked_at_utc": datetime.now(timezone.utc).isoformat(),
              "python": sys.version, "packages": {name: version(name) for name in ["marimo", "numpy", "pandas", "scipy", "matplotlib"]},
              "commands": results, "source_commit": "01a1c6ce89d076e969bf0a8300fcd9abc2c96e36",
              "sha256": {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in paths},
-             "data_observations": len(data), "fitted_parameters": dict(zip(("a", "loc", "scale"), fitted)),
-             "known_source_GD_diagnostic": {
-                 "parameters": {"n": 20000, "a": 3., "loc": 0., "scale": 1., "seed": 40},
-                 **diagnostics(generate("GD", 20000, 3., 0., 1., 40)["values"], 3., 0., 1.),
-                 "interpretation": "The source algorithm is preserved; these results do not approve its distributional correctness."},
+             "data_observations": len(data), "fitted_parameters": dict(zip(("a", "b", "theta"), fitted)),
+             "law_validation": "support, 6SE moment checks, DKW CDF bounds, reflection and reproducibility",
              "html_checks": html_checks,
              "html_export": "static initial state; live controls require marimo run",
              "visual_review": "separate from automated checks"}
