@@ -20,10 +20,6 @@
   "standalone_handwriting_study_included_in_main_report": false,
   "calculation_sha256_lf": "2f2ae60f67d42221da54976eba76f85beeb3a04ac5692109c045e7dbe74a0ead",
   "execution": {
-    "status": "passed",
-    "code_cells_executed": 24,
-    "execution_errors": 0,
-    "saved_results_overwritten": false,
-    "stochastic_values_and_timings_compared_to_saved": false
+    "status": "not requested"
   }
 }

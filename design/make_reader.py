@@ -81,7 +81,7 @@ def notebook_navigation(source):
 
 def native_markdown_source(cell):
     source = cell.source
-    source = re.sub(r'\$\$(.*?)\$\$', lambda m: '```math\n' + m.group(1).strip() + '\n```',
+    source = re.sub(r'[ \t]*\$\$(.*?)\$\$[ \t]*', lambda m: '\n\n```math\n' + m.group(1).strip() + '\n```\n\n',
                     source, flags=re.S)
     if source.startswith('<nav class="lab-nav"'):
         source = re.sub(r'^<nav[^>]*>', '<p class="lab-native-navigation">', source)

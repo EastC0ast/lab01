@@ -97,6 +97,10 @@ def main():
     assert all(str(value) in reader_map['design-title'].source for value in team['isu'].values())
     assert not re.search(r'\]\(#|href="#', '\n'.join(c.source for c in reader.cells))
     native = (ROOT / 'REPORT.md').read_text(encoding='utf-8')
+    author_display_math = [m.group(1).strip() for c in source.cells if c.cell_type == 'markdown'
+                           for m in re.finditer(r'\$\$(.*?)\$\$', c.source, flags=re.S)]
+    native_display_math = [m.group(1).strip() for m in re.finditer(r'```math\n(.*?)\n```', native, flags=re.S)]
+    assert native_display_math == author_display_math, 'An author display formula changed in the native report'
     expected_native = '\n\n'.join(native_markdown_source(nbformat.v4.new_markdown_cell(local(c.source))) for c in reader.cells) + '\n'
     assert native == expected_native, 'Native report differs from the preserved reader'
     targets = set(re.findall(r'(?:id|name)="([^"]+)"', native))
